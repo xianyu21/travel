@@ -28,35 +28,37 @@ export const selectedTabbarStrategy = TABBAR_MAP.NATIVE_TABBAR
 // selectedTabbarStrategy==NO_TABBAR(0) 时，tabbarList 不生效
 export const tabbarList: FgTabBarItem[] = [
   {
-    iconPath: 'static/tabbar/home.png',
-    selectedIconPath: 'static/tabbar/homeHL.png',
-    pagePath: 'pages/index/index',
+    iconPath: 'static/tabbar/1.png',
+    selectedIconPath: 'static/tabbar/1-1.png',
+    pagePath: 'pages/index',
     text: '首页',
-    icon: 'home',
-    // 选用 UI 框架自带的 icon 时，iconType 为 uiLib
+    icon: '',
     iconType: 'uiLib',
   },
   {
-    iconPath: 'static/tabbar/example.png',
-    selectedIconPath: 'static/tabbar/exampleHL.png',
-    pagePath: 'pages/about/about',
-    text: '关于',
-    icon: 'i-carbon-code',
-    // 注意 unocss 的图标需要在 页面上引入一下，或者配置到 unocss.config.ts 的 safelist 中
-    iconType: 'unocss',
+    iconPath: 'static/tabbar/2.png',
+    selectedIconPath: 'static/tabbar/2-2.png',
+    pagePath: 'pages/travel',
+    text: '旅接',
+    icon: '',
+    iconType: 'uiLib',
   },
-  // {
-  //   pagePath: 'pages/my/index',
-  //   text: '我的',
-  //   icon: '/static/logo.svg',
-  //   iconType: 'local',
-  // },
-  // {
-  //   pagePath: 'pages/mine/index',
-  //   text: '我的',
-  //   icon: 'iconfont icon-my',
-  //   iconType: 'iconfont',
-  // },
+  {
+    iconPath: 'static/tabbar/3.png',
+    selectedIconPath: 'static/tabbar/3-3.png',
+    pagePath: 'pages/news',
+    text: '消息',
+    icon: '',
+    iconType: 'uiLib',
+  },
+  {
+    iconPath: 'static/tabbar/4.png',
+    selectedIconPath: 'static/tabbar/4-4.png',
+    pagePath: 'pages/mine',
+    text: '我的',
+    icon: '',
+    iconType: 'uiLib',
+  },
 ]
 
 // NATIVE_TABBAR(1) 和 CUSTOM_TABBAR_WITH_CACHE(2) 时，需要tabbar缓存
@@ -65,15 +67,22 @@ export const cacheTabbarEnable = selectedTabbarStrategy === TABBAR_MAP.NATIVE_TA
 
 const _tabbar: TabBar = {
   // 只有微信小程序支持 custom。App 和 H5 不生效
-  custom: selectedTabbarStrategy === TABBAR_MAP.CUSTOM_TABBAR_WITH_CACHE,
-  color: '#999999',
-  selectedColor: '#018d71',
-  backgroundColor: '#F8F8F8',
-  borderStyle: 'black',
-  height: '50px',
-  fontSize: '10px',
+  // custom: selectedTabbarStrategy === TABBAR_MAP.CUSTOM_TABBAR_WITH_CACHE,
+  color: '#707070',
+  selectedColor: '#333333',
+  backgroundColor: '#FFFFFF',
+  borderStyle: 'white',
+  height: '84px',
+  fontSize: '12px',
   iconWidth: '24px',
-  spacing: '3px',
+  spacing: '5px',
+  midButton: {
+    iconPath: '/static/tabbar/5.png',
+    width: '93px',
+    height: '93px',
+    iconWidth: '57px',
+    text: '发布需求',
+  },
   list: tabbarList as unknown as TabBar['list'],
 }
 
