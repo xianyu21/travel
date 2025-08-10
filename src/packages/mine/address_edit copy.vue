@@ -10,21 +10,22 @@
 <script setup>
 import { useMessage, useToast } from 'wot-design-uni'
 import { getAddAddr, getAddrDetail, getUpdateAddr } from '@/api/index'
-import { useColPickerData } from '@/hooks/useColPickerData'
 import { useUserStore } from '@/store'
-import { back } from '@/utils/tools'
+import { back, getCurrentQuery, go, reloadUrl } from '@/utils/tools'
 
-const { colPickerData, findChildrenByCode } = useColPickerData()
 const toast = useToast()
 const message = useMessage()
 const userStore = useUserStore()
+
+// 获取路由参数，判断是编辑还是新增
+const query = getCurrentQuery()
 const isEdit = ref(false)
 const pageTitle = computed(() => isEdit.value ? '编辑地址' : '新建地址')
 
 // 表单数据
 const formData = ref({
-  contact: '冯宝宝',
-  contactPhone: '13612342125',
+  contact: '',
+  contactPhone: '',
   address: '',
   doorNumber: '',
   isDefault: 0,
@@ -39,14 +40,8 @@ const site = ref([])
 const province = ref([])
 const city = ref([])
 const county = ref([])
-const columns = ref([
-  colPickerData.map((item) => {
-    return {
-      value: item.value,
-      label: item.text,
-    }
-  }),
-])
+// , dataRegion.filter(el => el.regionLevel === 2 && el.parentId === 110000), dataRegion.filter(el => el.regionLevel === 3 && el.parentId === 110100)
+const columns = ref([])
 // 如果是编辑模式，加载地址数据
 onLoad((options) => {
   console.log('------------------------------')
@@ -59,43 +54,57 @@ onLoad((options) => {
       addrId: options.addrId,
     }).then((res) => {
       formData.value = Object.assign(formData.value, res.data)
-      site.value = [res.data.province, res.data.city, res.data.county]
     })
   }
+  // formData.value.province = dataRegion.filter(el => el.regionLevel === 1 && el.parentId === 100000)
+  // formData.value.provinceId = province.value[0].id
+  // formData.value.city = dataRegion.filter(el => el.regionLevel === 2 && el.parentId === province[0].id)
+  // formData.value.cityId = city.value[0].id
+  // formData.value.county = dataRegion.filter(el => el.regionLevel === 3 && el.parentId === city.value[0].id)
+  // formData.value.countyId = county.value[0].id
+  // 缓存不存在或失效，重新处理数据
+  const provinces = dataRegion.filter(el => el.regionLevel === 1 && el.parentId === 100000)
+  columns.value = [provinces.map((province) => {
+    const cities = dataRegion.filter(el => el.regionLevel === 2 && el.parentId === province.id)
+    return {
+      ...province,
+      children: cities.map((city) => {
+        const districts = dataRegion.filter(el => el.regionLevel === 3 && el.parentId === city.id)
+        return {
+          ...city,
+          children: districts,
+        }
+      }),
+    }
+  })]
 })
+
+function selectaddress() {
+  // message.alert('选择地址功能需要接入地图API')
+}
+
+// 保存地址
 function saveaddress() {
   console.log('------------------------------')
-  console.log(site.value)
+  console.log(formData.value)
   console.log('------------------------------')
   // 表单验证
   if (!formData.value.contact) {
-    toast.show('请输入名称')
+    toast.error('请输入名称')
     return
   }
   if (!formData.value.contactPhone) {
-    toast.show('请输入联系方式')
+    toast.error('请输入联系方式')
     return
   }
   if (!/^1[3-9]\d{9}$/.test(formData.value.contactPhone)) {
-    toast.show('请输入正确的手机号码')
-    return
-  }
-  if (site.value.length === 0) {
-    toast.show('请选择地址')
+    toast.error('请输入正确的手机号码')
     return
   }
   if (!formData.value.address) {
-    toast.show('请输入详情地址')
+    toast.error('请选择详细地址')
     return
   }
-  formData.value.province = site.value[0]
-  formData.value.city = site.value[0]
-  formData.value.county = site.value[0]
-
-  console.log({
-    ...formData.value,
-    address: site.value.join('') + formData.value.address,
-  })
   if (isEdit.value) {
     toast.success('编辑成功')
 
@@ -118,30 +127,69 @@ function saveaddress() {
       console.log('------------------------------')
     })
   }
-  uni.$emit('updataSite')
-  setTimeout(() => {
-    back()
-  }, 1500)
+
+  // setTimeout(() => {
+  //   back()
+  // }, 1500)
 }
 
-function columnChange({ selectedItem, resolve, finish }) {
-  const areaData = findChildrenByCode(colPickerData, selectedItem.value)
-  if (areaData && areaData.length) {
-    resolve(
-      areaData.map((item) => {
-        return {
-          value: item.value,
-          label: item.text,
-        }
-      }),
-    )
-  }
-  else {
-    finish()
-  }
-}
-function handleConfirm({ value }) {
-  console.log(value)
+// 处理地址选择器的列变化
+function columnChange(selectedItem, resolve, finish) {
+  console.log('------------------------------')
+  console.log(selectedItem)
+  console.log('------------------------------')
+  const { columnIndex, selectedValue } = selectedItem
+  const cities = dataRegion.filter(el => el.regionLevel === 2 && el.parentId === provinceId)
+  resolve(cities)
+  // if (columnIndex === 0) {
+  //   // 选择了省，更新市列表
+  //   const provinceId = selectedValue.id
+  //   formData.value.province = selectedValue.regionName
+  //   formData.value.provinceId = provinceId
+
+  //   // 获取该省下的所有市
+  //   const cities = dataRegion.filter(el => el.regionLevel === 2 && el.parentId === provinceId)
+  //   resolve(cities)
+
+  //   if (cities.length > 0) {
+  //     // 默认选中第一个市
+  //     formData.value.city = cities[0].regionName
+  //     formData.value.cityId = cities[0].id
+
+  //     // 获取第一个市下的所有区县
+  //     const counties = dataRegion.filter(el => el.regionLevel === 3 && el.parentId === cities[0].id)
+  //     if (counties.length > 0) {
+  //       formData.value.county = counties[0].regionName
+  //       formData.value.countyId = counties[0].id
+  //     }
+  //   }
+  // }
+  // else if (columnIndex === 1) {
+  //   // 选择了市，更新区县列表
+  //   const cityId = selectedValue.id
+  //   formData.value.city = selectedValue.regionName
+  //   formData.value.cityId = cityId
+
+  //   // 获取该市下的所有区县
+  //   const counties = dataRegion.filter(el => el.regionLevel === 3 && el.parentId === cityId)
+  //   resolve(counties)
+
+  //   if (counties.length > 0) {
+  //     // 默认选中第一个区县
+  //     formData.value.county = counties[0].regionName
+  //     formData.value.countyId = counties[0].id
+  //   }
+  // }
+  // else if (columnIndex === 2) {
+  //   // 选择了区县
+  //   formData.value.county = selectedValue.regionName
+  //   formData.value.countyId = selectedValue.id
+
+  //   // 更新地址字符串
+  //   formData.value.address = `${formData.value.province}${formData.value.city}${formData.value.county}`
+
+  //   finish()
+  // }
 }
 </script>
 
@@ -172,7 +220,10 @@ function handleConfirm({ value }) {
         >
       </view>
 
-      <view class="flex items-center justify-between gap-[30rpx] border-b border-[#f5f5f5] py-[30rpx]">
+      <view
+        class="flex items-center justify-between gap-[30rpx] border-b border-[#f5f5f5] py-[30rpx]"
+        @click="selectaddress"
+      >
         <text class="text-[28rpx] text-[#333]">
           详细地址
         </text>
@@ -191,12 +242,10 @@ function handleConfirm({ value }) {
           v-model=""  :columns="columns"
           :column-change="onChangeDistrict"
         /> -->
-        <view class="flex flex-1 items-end justify-end">
-          <wd-col-picker
-            v-model="site" placeholder="请选择你的地址" :columns="columns" :column-change="columnChange"
-            @confirm="handleConfirm"
-          />
-        </view>
+        <wd-col-picker
+          v-model="site" label="选择地址" value-key="regionName" label-key="regionName" placeholder="请选择你的地址"
+          :columns="columns" :column-change="columnChange"
+        />
       </view>
 
       <view class="flex items-center justify-between py-[30rpx]">
@@ -204,7 +253,7 @@ function handleConfirm({ value }) {
           门牌号
         </text>
         <input
-          v-model="formData.address" class="text-right text-[28rpx] text-[#333]" placeholder="例：A座3单元801"
+          v-model="formData.doorNumber" class="text-right text-[28rpx] text-[#333]" placeholder="例：A座3单元801"
           placeholder-class="text-[#999]"
         >
       </view>
@@ -215,7 +264,7 @@ function handleConfirm({ value }) {
         <text class="text-[28rpx] text-[#A6A7A8]" size="48rpx">
           设为默认地址
         </text>
-        <wd-switch v-model="formData.isDefault" :active-value="1" :inactive-value="0" />
+        <!-- <wd-switch v-model="formData.isDefault" /> -->
       </view>
     </view>
 

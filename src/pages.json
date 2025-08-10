@@ -10,6 +10,7 @@
     "autoscan": true,
     "custom": {
       "^fg-(.*)": "@/components/fg-$1/fg-$1.vue",
+      "^ol-(.*)": "@/components/ol-$1/ol-$1.vue",
       "^wd-(.*)": "wot-design-uni/components/wd-$1/wd-$1.vue",
       "^(?!z-paging-refresh|z-paging-load-more)z-paging(.*)": "z-paging/components/z-paging$1/z-paging$1.vue"
     }
@@ -174,7 +175,7 @@
           "type": "page",
           "layout": "default",
           "style": {
-            "navigationBarTitleText": "我的景点"
+            "navigationBarTitleText": "精选景点"
           }
         },
         {
@@ -204,6 +205,14 @@
           "layout": "default",
           "style": {
             "navigationBarTitleText": "地址管理"
+          }
+        },
+        {
+          "path": "address_edit copy",
+          "type": "page",
+          "layout": "default",
+          "style": {
+            "navigationBarTitleText": "新建地址"
           }
         },
         {
@@ -263,6 +272,14 @@
           }
         },
         {
+          "path": "coupon",
+          "type": "page",
+          "layout": "default",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
           "path": "entry_information",
           "type": "page",
           "layout": "default",
@@ -316,6 +333,14 @@
           }
         },
         {
+          "path": "confirm",
+          "type": "page",
+          "layout": "default",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
           "path": "details",
           "type": "page",
           "layout": "default",
@@ -325,6 +350,19 @@
         },
         {
           "path": "evaluate",
+          "type": "page",
+          "layout": "default",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        }
+      ]
+    },
+    {
+      "root": "packages/travel",
+      "pages": [
+        {
+          "path": "details",
           "type": "page",
           "layout": "default",
           "style": {

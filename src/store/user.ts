@@ -55,7 +55,6 @@ export const useUserStore = defineStore(
       setUserInfo(userInfo)
       uni.setStorageSync('userInfo', userInfo)
       uni.setStorageSync('token', userInfo.token)
-      // TODO 这里可以增加获取用户路由的方法 根据用户的角色动态生成路由
       return res
     }
     /**
@@ -64,15 +63,15 @@ export const useUserStore = defineStore(
      * @returns R<IUserLogin>
      */
     const login = async (credentials: {
-      username: string
-      password: string
-      code: string
-      uuid: string
+      phone: string
+      messageCode: string
     }) => {
       const res = await _login(credentials)
       console.log('登录信息', res)
       toast.success('登录成功')
-      await getUserInfo()
+      setUserInfo(res.data)
+      uni.setStorageSync('userInfo', res.data)
+      uni.setStorageSync('token', res.data.token)
       return res
     }
 
@@ -101,6 +100,7 @@ export const useUserStore = defineStore(
       login,
       wxLogin,
       getUserInfo,
+      setUserInfo,
       setUserAvatar,
       logout,
     }

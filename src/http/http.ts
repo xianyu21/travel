@@ -13,8 +13,18 @@ export function http<T>(options: CustomRequestOptions) {
       success(res) {
         // 状态码 2xx，参考 axios 的设计
         if (res.statusCode >= 200 && res.statusCode < 300) {
-          // 2.1 提取核心数据 res.data
-          resolve(res.data as IResData<T>)
+          const code = res.data.code
+          if (code == 200) {
+            resolve(res.data as IResData<T>)
+          }
+          else if (code == 401) {
+            !options.hideErrorToast
+            && uni.showToast({
+              icon: 'none',
+              title: (res.data as IResData<T>).msg || '请求错误',
+            })
+            reject(res)
+          }
         }
         else if (res.statusCode === 401) {
           // 401错误  -> 清理用户信息，跳转到登录页

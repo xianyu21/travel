@@ -66,7 +66,7 @@ const userStore = useUserStore()
             张
           </text>
         </view>
-        <view class="h-[72rpx] w-full flex items-center justify-center gap-[10rpx] rounded-[20rpx] bg-[#8CC2FD] text-[#fff]">
+        <view class="h-[72rpx] w-full flex items-center justify-center gap-[10rpx] rounded-[20rpx] bg-[#8CC2FD] text-[#fff]" @click="go('/packages/mine/coupon')">
           <image
             src="@img/img-025.png"
             mode="scaleToFill"
@@ -212,13 +212,13 @@ const userStore = useUserStore()
 </template>
 
 <style lang="scss" scoped>
-.bg-001 {
-  // width: 100%;
-  height: 234rpx;
-  background-image: url('/static/images/bg-004.png');
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-}
+// .bg-001 {
+//   // width: 100%;
+//   height: 234rpx;
+//   background-image: url('/static/images/bg-004.png');
+//   background-repeat: no-repeat;
+//   background-size: 100% 100%;
+// }
 
 .bg-002 {
   width: 100%;
