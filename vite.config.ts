@@ -60,7 +60,7 @@ export default ({ command, mode }) => {
     plugins: [
       UniPages({
         exclude: ['**/components/**/**.*'],
-        subPackages: ['src/packages/public', 'src/packages/home', 'src/packages/mine', 'src/packages/news', 'src/packages/order'],
+        subPackages: ['src/packages/public', 'src/packages/home', 'src/packages/mine', 'src/packages/news', 'src/packages/order', 'src/packages/travel'],
         dts: 'src/types/uni-pages.d.ts',
       }),
       UniLayouts(),
@@ -152,7 +152,7 @@ export default ({ command, mode }) => {
     },
     server: {
       host: '0.0.0.0',
-      hmr: true,
+      // hmr: true,
       port: Number.parseInt(VITE_APP_PORT, 10),
       // 仅 H5 端生效，其他端不生效（其他端走build，不走devServer)
       proxy: JSON.parse(VITE_APP_PROXY)
@@ -160,6 +160,7 @@ export default ({ command, mode }) => {
             [VITE_APP_PROXY_PREFIX]: {
               target: VITE_SERVER_BASEURL,
               changeOrigin: true,
+              secure: false,
               rewrite: path => path.replace(new RegExp(`^${VITE_APP_PROXY_PREFIX}`), ''),
             },
           }

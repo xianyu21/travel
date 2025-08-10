@@ -68,6 +68,9 @@ importers:
       '@tanstack/vue-query':
         specifier: ^5.62.16
         version: 5.62.16(vue@3.5.15(typescript@5.7.2))
+      '@vant/area-data':
+        specifier: ^2.0.0
+        version: 2.0.0
       abortcontroller-polyfill:
         specifier: ^1.7.8
         version: 1.7.8
@@ -80,6 +83,9 @@ importers:
       js-cookie:
         specifier: ^3.0.5
         version: 3.0.5
+      mp-html:
+        specifier: ^2.5.1
+        version: 2.5.1
       pinia:
         specifier: 2.0.36
         version: 2.0.36(typescript@5.7.2)(vue@3.5.15(typescript@5.7.2))
@@ -231,6 +237,8 @@ importers:
       vue-tsc:
         specifier: ^2.2.10
         version: 2.2.10(typescript@5.7.2)
+
+  src/uni_modules/mp-html: {}
 
 packages:
 
@@ -1221,6 +1229,7 @@ packages:
   '@esbuild/darwin-arm64@0.20.2':
     resolution: {integrity: sha512-4J6IRT+10J3aJH3l1yzEg9y3wkTDgDk7TSDFX+wKFiWjqWp/iCfLIYzGyasx9l0SAFPT1HwSCR+0w/h1ES/MjA==}
     engines: {node: '>=12'}
+    cpu: [arm64]
     os: [darwin]
 
   '@esbuild/darwin-arm64@0.25.5':
@@ -1232,6 +1241,7 @@ packages:
   '@esbuild/darwin-x64@0.20.2':
     resolution: {integrity: sha512-tBcXp9KNphnNH0dfhv8KYkZhjc+H3XBkF5DKtswJblV7KlT9EI2+jeA8DgBjp908WEuYll6pF+UStUCfEpdysA==}
     engines: {node: '>=12'}
+    cpu: [x64]
     os: [darwin]
 
   '@esbuild/darwin-x64@0.25.5':
@@ -2002,6 +2012,7 @@ packages:
 
   '@rollup/rollup-darwin-x64@4.28.0':
     resolution: {integrity: sha512-8hxgfReVs7k9Js1uAIhS6zq3I+wKQETInnWQtgzt8JfGx51R1N6DRVy3F4o0lQwumbErRz52YqwjfvuwRxGv1w==}
+    cpu: [x64]
     os: [darwin]
 
   '@rollup/rollup-darwin-x64@4.41.1':
@@ -2548,6 +2559,9 @@ packages:
     resolution: {integrity: sha512-ZJHN8+HKSrclVjT/+S7Vh2t59DK8J44d5nLZPG1Goua7uNK8yYJeOLK2sCGX7aackRer1ZynmglFFzxNFVt+IA==}
     peerDependencies:
       vite: ^2.9.0 || ^3.0.0-0 || ^4.0.0 || ^5.0.0-0 || ^6.0.0-0
+
+  '@vant/area-data@2.0.0':
+    resolution: {integrity: sha512-zgP4AA8z09S9QTNgVCCHo9cHjcybrv22RJDYPjuCkecn4SB98T5EoPQh2TwqbQXmUhbaOGgiZGy3OUaUxnY7qg==}
 
   '@vitejs/plugin-legacy@5.3.2':
     resolution: {integrity: sha512-8moCOrIMaZ/Rjln0Q6GsH6s8fAt1JOI3k8nmfX4tXUxE5KAExVctSyOBk+A25GClsdSWqIk2yaUthH3KJ2X4tg==}
@@ -4975,6 +4989,9 @@ packages:
 
   module-alias@2.2.3:
     resolution: {integrity: sha512-23g5BFj4zdQL/b6tor7Ji+QY4pEfNH784BMslY9Qb0UnJWRAt+lQGLYmRaM0KDBwIG23ffEBELhZDP2rhi9f/Q==}
+
+  mp-html@2.5.1:
+    resolution: {integrity: sha512-7BEH8dnQ89kOIyjdoYni8zcc0QAg+lgEWg0n9or9q2D4l26JNG+KPzHfttDyisC/5S7aPBblpXrFTYQv475w/Q==}
 
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
@@ -9825,6 +9842,8 @@ snapshots:
       - vue
     optional: true
 
+  '@vant/area-data@2.0.0': {}
+
   '@vitejs/plugin-legacy@5.3.2(terser@5.36.0)(vite@5.2.8(@types/node@20.17.9)(sass@1.77.8)(terser@5.36.0))':
     dependencies:
       '@babel/core': 7.26.0
@@ -12852,6 +12871,8 @@ snapshots:
       commander: 12.1.0
 
   module-alias@2.2.3: {}
+
+  mp-html@2.5.1: {}
 
   mrmime@2.0.1: {}
 
