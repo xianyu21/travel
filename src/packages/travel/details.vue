@@ -68,7 +68,7 @@ onLoad((options) => {
           </view>
           <view class="flex items-end gap-[10rpx]">
             <text class="text-[#D62929] text-[28rpx]">{{info.score || 0}}分</text>
-            <text class="text-[#555555]  text-[28rpx]">已服务6000+单 </text>
+            <text class="text-[#555555]  text-[28rpx]">已服务{{travel.receiveCount || 0}}单 </text>
             <image src="@img/img-029.png" mode="scaleToFill" class="w-[36rpx] h-[36rpx]" />
             <text class="text-[#717171] text-[28rpx]">距您1.5km</text>
           </view>
