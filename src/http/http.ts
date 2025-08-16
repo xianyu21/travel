@@ -23,13 +23,23 @@ export function http<T>(options: CustomRequestOptions) {
               icon: 'none',
               title: (res.data as IResData<T>).msg || '请求错误',
             })
+            uni.navigateTo({ url: '/packages/public/login' })
+            reject(res)
+          }
+          else {
+            !options.hideErrorToast
+            && uni.showToast({
+              icon: 'none',
+              title: (res.data as IResData<T>).msg || '请求错误',
+            })
+            uni.$emit('z-paging-error-emit')
             reject(res)
           }
         }
         else if (res.statusCode === 401) {
           // 401错误  -> 清理用户信息，跳转到登录页
           // userStore.clearUserInfo()
-          // uni.navigateTo({ url: '/pages/login/login' })
+
           reject(res)
         }
         else {

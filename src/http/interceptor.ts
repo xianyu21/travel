@@ -8,15 +8,14 @@ export type CustomRequestOptions = UniApp.RequestOptions & {
   /** 出错时是否隐藏错误提示 */
   hideErrorToast?: boolean
 } & IUniUploadFileOptions // 添加uni.uploadFile参数类型
-
-// 请求基准地址
 const baseUrl = getEnvBaseUrl()
-
-// 拦截器配置
 const httpInterceptor = {
-  // 拦截前触发
   invoke(options: CustomRequestOptions) {
-    // 接口请求支持通过 query 参数配置 queryString
+    const userStore = useUserStore()
+    // if (options.data) {
+    //   options.data.provinceId = userStore.locationInfo.provinceId
+    //   options.data.cityId = userStore.locationInfo.cityId
+    // }
     if (options.query) {
       const queryStr = stringifyQuery(options.query)
       if (options.url.includes('?')) {
@@ -52,7 +51,7 @@ const httpInterceptor = {
       ...options.header,
     }
     // 3. 添加 token 请求头标识
-    const userStore = useUserStore()
+
     const { token } = userStore.userInfo as unknown as IUserInfo
     if (token) {
       options.header.token = token
