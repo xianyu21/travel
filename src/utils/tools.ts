@@ -1,7 +1,8 @@
 /**
  * 构建下载链接
+ * 根据提供的文件标识符生成完整的下载URL
  *
- * @param fileIdentifiers 文件标识符数组
+ * @param fileIdentifiers 文件标识符数组或单个文件标识符
  * @param outputType 输出类型，默认为 "array"。可选值为 "array" 或 "string"
  * @returns 根据 outputType 参数返回字符串数组或逗号分隔的字符串
  */
@@ -26,7 +27,13 @@ export function buildDownloadURL(
     return urls // 返回数组
   }
 }
-// OSS文件
+
+/**
+ * 获取OSS文件的完整URL
+ *
+ * @param {any} uniqueCode 文件的唯一标识符
+ * @returns {string} 完整的OSS文件URL或空字符串
+ */
 export function reloadOssUrl(uniqueCode: any) {
   if (uniqueCode) {
     return `https://video.test01.eabug.com/${uniqueCode}`
@@ -35,7 +42,13 @@ export function reloadOssUrl(uniqueCode: any) {
     return ''
   }
 }
-// 指定文件
+
+/**
+ * 获取静态文件的完整URL
+ *
+ * @param {any} uniqueCode 文件的唯一标识符
+ * @returns {string} 完整的静态文件URL或空字符串
+ */
 export function reloadUrl(uniqueCode: any) {
   if (uniqueCode) {
     return `${import.meta.env.VITE_SERVER_BASEURL}/static/${uniqueCode}`
@@ -44,7 +57,13 @@ export function reloadUrl(uniqueCode: any) {
     return ''
   }
 }
-// 文件
+
+/**
+ * 获取本地文件的完整URL
+ *
+ * @param {any} uniqueCode 文件的唯一标识符
+ * @returns {string} 完整的本地文件URL或空字符串
+ */
 export function localUrl(uniqueCode: any) {
   if (uniqueCode) {
     return `${import.meta.env.VITE_SERVER_BASEURL}/${uniqueCode}`
