@@ -25,7 +25,7 @@ dayjs.locale('zh-cn')
 
 // 选中的日期和时间
 const selectedDayIndex = ref(0)
-const selectedTime = ref('14:00')
+const selectedTimeSlot = ref({ start: '14:00', end: '15:00' })
 const currentDate = ref(dayjs())
 const weekDays = ref([])
 
@@ -38,7 +38,7 @@ function generateWeekDays() {
       date: day,
       name: day.format('ddd').replace('周', '周'),
       number: day.format('D'),
-      fullDate: day.format('YYYY-MM-DD'),
+      fullDate: day.format('YYYY/MM/DD'),
     })
   }
   return days
@@ -51,32 +51,32 @@ onMounted(() => {
   selectedDayIndex.value = 0
 })
 
-// 时间点数据
-const timePoints = [
-  '0:00',
-  '1:00',
-  '2:00',
-  '3:00',
-  '4:00',
-  '5:00',
-  '6:00',
-  '7:00',
-  '8:00',
-  '9:00',
-  '10:00',
-  '11:00',
-  '12:00',
-  '13:00',
-  '14:00',
-  '15:00',
-  '16:00',
-  '17:00',
-  '18:00',
-  '19:00',
-  '20:00',
-  '21:00',
-  '22:00',
-  '23:00',
+// 时间段数据
+const timeSlots = [
+  { start: '0:00', end: '1:00' },
+  { start: '1:00', end: '2:00' },
+  { start: '2:00', end: '3:00' },
+  { start: '3:00', end: '4:00' },
+  { start: '4:00', end: '5:00' },
+  { start: '5:00', end: '6:00' },
+  { start: '6:00', end: '7:00' },
+  { start: '7:00', end: '8:00' },
+  { start: '8:00', end: '9:00' },
+  { start: '9:00', end: '10:00' },
+  { start: '10:00', end: '11:00' },
+  { start: '11:00', end: '12:00' },
+  { start: '12:00', end: '13:00' },
+  { start: '13:00', end: '14:00' },
+  { start: '14:00', end: '15:00' },
+  { start: '15:00', end: '16:00' },
+  { start: '16:00', end: '17:00' },
+  { start: '17:00', end: '18:00' },
+  { start: '18:00', end: '19:00' },
+  { start: '19:00', end: '20:00' },
+  { start: '20:00', end: '21:00' },
+  { start: '21:00', end: '22:00' },
+  { start: '22:00', end: '23:00' },
+  { start: '23:00', end: '0:00' },
 ]
 
 // 初始化周日期数据
@@ -93,12 +93,14 @@ const selectedDate = computed(() => {
   return weekDays.value[selectedDayIndex.value]?.fullDate || ''
 })
 
-// 计算选中的时间点字符串
-const selectedTimeText = computed(() => selectedTime.value)
+// 计算选中的时间范围字符串
+const selectedTimeRange = computed(() => {
+  return `${selectedTimeSlot.value.start}-${selectedTimeSlot.value.end}`
+})
 
-// 判断时间点是否被选中
-function isTimeSelected(time) {
-  return selectedTime.value === time
+// 判断时间段是否被选中
+function isTimeSlotSelected(slot) {
+  return selectedTimeSlot.value.start === slot.start && selectedTimeSlot.value.end === slot.end
 }
 
 // 选择日期
@@ -106,9 +108,9 @@ function selectDay(index) {
   selectedDayIndex.value = index
 }
 
-// 选择时间点
-function selectTime(time) {
-  selectedTime.value = time
+// 选择时间段
+function selectTimeSlot(slot) {
+  selectedTimeSlot.value = slot
 }
 
 // 关闭时间选择器
@@ -120,11 +122,12 @@ function handleClose() {
 function handleConfirm() {
   if (weekDays.value.length === 0)
     return
+
   const selectedDay = weekDays.value[selectedDayIndex.value]
   emit('confirm', {
     date: selectedDay.fullDate,
-    time: selectedTime.value,
-    fullTime: `${selectedDay.fullDate} ${selectedTime.value}`,
+    timeRange: selectedTimeRange.value,
+    fullTime: `${selectedDay.fullDate} ${selectedTimeRange.value}`,
     dayjs: selectedDay.date,
   })
 }
@@ -143,7 +146,7 @@ function handleConfirm() {
       </view>
 
       <view class="selected-time">
-        已选时间 {{ selectedDate }} {{ selectedTimeText }}
+        已选时间 {{ selectedDate }} {{ selectedTimeRange }}
       </view>
 
       <!-- 日期选择 -->
@@ -163,17 +166,80 @@ function handleConfirm() {
         </view>
       </view>
 
-      <!-- 时间点选择 -->
+      <!-- 时间段选择 -->
       <view class="time-slots-container">
-        <view v-for="row in 4" :key="row" class="time-slots-row">
+        <view class="time-slots-row">
           <view
-            v-for="(time, index) in timePoints.slice((row - 1) * 6, row * 6)"
-            :key="time"
-            class="time-slot" :class="[isTimeSelected(time) ? 'time-slot-selected' : '']"
-            @click="selectTime(time)"
+            v-for="(slot, index) in timeSlots.slice(0, 6)"
+            :key="index"
+            class="time-slot" :class="[isTimeSlotSelected(slot) ? 'time-slot-selected' : '']"
+            @click="selectTimeSlot(slot)"
           >
             <text class="time-range">
-              {{ time }}
+              {{ slot.start }}
+            </text>
+            <text class="time-separator">
+              -
+            </text>
+            <text class="time-range">
+              {{ slot.end }}
+            </text>
+          </view>
+        </view>
+
+        <view class="time-slots-row">
+          <view
+            v-for="(slot, index) in timeSlots.slice(6, 12)"
+            :key="index + 6"
+            class="time-slot" :class="[isTimeSlotSelected(slot) ? 'time-slot-selected' : '']"
+            @click="selectTimeSlot(slot)"
+          >
+            <text class="time-range">
+              {{ slot.start }}
+            </text>
+            <text class="time-separator">
+              -
+            </text>
+            <text class="time-range">
+              {{ slot.end }}
+            </text>
+          </view>
+        </view>
+
+        <view class="time-slots-row">
+          <view
+            v-for="(slot, index) in timeSlots.slice(12, 18)"
+            :key="index + 12"
+            class="time-slot" :class="[isTimeSlotSelected(slot) ? 'time-slot-selected' : '']"
+            @click="selectTimeSlot(slot)"
+          >
+            <text class="time-range">
+              {{ slot.start }}
+            </text>
+            <text class="time-separator">
+              -
+            </text>
+            <text class="time-range">
+              {{ slot.end }}
+            </text>
+          </view>
+        </view>
+
+        <view class="time-slots-row">
+          <view
+            v-for="(slot, index) in timeSlots.slice(18, 24)"
+            :key="index + 18"
+            class="time-slot" :class="[isTimeSlotSelected(slot) ? 'time-slot-selected' : '']"
+            @click="selectTimeSlot(slot)"
+          >
+            <text class="time-range">
+              {{ slot.start }}
+            </text>
+            <text class="time-separator">
+              -
+            </text>
+            <text class="time-range">
+              {{ slot.end }}
             </text>
           </view>
         </view>

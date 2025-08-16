@@ -91,11 +91,8 @@ function handleConfirm() {
       <view class="service-projects-container">
         <view class="service-projects-row">
           <view
-            v-for="project in serviceProjects.slice(0, 4)"
-            :key="project.id"
-            class="service-project-item"
-            :class="[isProjectSelected(project) ? 'service-project-selected' : '']"
-            @click="selectProject(project)"
+            v-for="project in serviceProjects.slice(0, 4)" :key="project.id" class="service-project-item"
+            :class="[isProjectSelected(project) ? 'service-project-selected' : '']" @click="selectProject(project)"
           >
             <text class="service-project-name">
               {{ project.name }}
@@ -105,11 +102,8 @@ function handleConfirm() {
 
         <view class="service-projects-row">
           <view
-            v-for="project in serviceProjects.slice(4, 8)"
-            :key="project.id"
-            class="service-project-item"
-            :class="[isProjectSelected(project) ? 'service-project-selected' : '']"
-            @click="selectProject(project)"
+            v-for="project in serviceProjects.slice(4, 8)" :key="project.id" class="service-project-item"
+            :class="[isProjectSelected(project) ? 'service-project-selected' : '']" @click="selectProject(project)"
           >
             <text class="service-project-name">
               {{ project.name }}
