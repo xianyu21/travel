@@ -23,10 +23,9 @@ const pageTitle = computed(() => isEdit.value ? '编辑地址' : '新建地址')
 
 // 表单数据
 const formData = ref({
-  contact: '冯宝宝',
-  contactPhone: '13612342125',
+  contact: '',
+  contactPhone: '',
   address: '',
-  doorNumber: '',
   isDefault: 0,
   province: '',
   provinceId: '',
@@ -34,36 +33,47 @@ const formData = ref({
   cityId: '',
   county: '',
   countyId: '',
+  detail: '',
 })
 const site = ref([])
-const province = ref([])
-const city = ref([])
-const county = ref([])
-const columns = ref([
-  colPickerData.map((item) => {
-    return {
-      value: item.value,
-      label: item.text,
-    }
-  }),
-])
-// 如果是编辑模式，加载地址数据
-onLoad((options) => {
-  console.log('------------------------------')
+const columns = ref([])
+onLoad(async (options) => {
   console.log(options)
-  console.log('------------------------------')
   if (options && options.addrId) {
     isEdit.value = true
     formData.value.addrId = options.addrId
-    getAddrDetail({
+    const res = await getAddrDetail({
       addrId: options.addrId,
-    }).then((res) => {
-      formData.value = Object.assign(formData.value, res.data)
-      site.value = [res.data.province, res.data.city, res.data.county]
     })
+    formData.value = Object.assign(formData.value, res.data)
+    site.value = [res.data.provinceId, res.data.cityId, res.data.countyId]
+    columns.value = [colPickerData.map((item) => {
+      return {
+        value: item.value,
+        label: item.text,
+      }
+    }), findChildrenByCode(colPickerData, formData.value?.provinceId)?.map((item) => {
+      return {
+        value: item.value,
+        label: item.text,
+      }
+    }), findChildrenByCode(colPickerData, formData.value?.cityId)?.map((item) => {
+      return {
+        value: item.value,
+        label: item.text,
+      }
+    })]
+  }
+  else {
+    columns.value = [colPickerData.map((item) => {
+      return {
+        value: item.value,
+        label: item.text,
+      }
+    })]
   }
 })
-function saveaddress() {
+async function saveaddress() {
   console.log('------------------------------')
   console.log(site.value)
   console.log('------------------------------')
@@ -84,47 +94,71 @@ function saveaddress() {
     toast.show('请选择地址')
     return
   }
-  if (!formData.value.address) {
+  if (!formData.value.detail) {
     toast.show('请输入详情地址')
     return
   }
-  formData.value.province = site.value[0]
-  formData.value.city = site.value[0]
-  formData.value.county = site.value[0]
 
-  console.log({
-    ...formData.value,
-    address: site.value.join('') + formData.value.address,
-  })
+  formData.value.provinceId = site.value[0]
+  formData.value.cityId = site.value[1]
+  formData.value.countyId = site.value[2]
+  const siteName = getAreaNames(site.value)
+  formData.value.province = siteName[0]
+  formData.value.city = siteName[1]
+  formData.value.county = siteName[2]
+
   if (isEdit.value) {
     toast.success('编辑成功')
-
-    getUpdateAddr({
+    await getUpdateAddr({
       ...formData.value,
-    }).then((res) => {
-      toast.success('保存成功')
-      console.log('------------------------------')
-      console.log(res)
-      console.log('------------------------------')
+      address: siteName.join('') + formData.value.detail,
     })
+    toast.success('保存成功')
   }
   else {
-    getAddAddr({
+    await getAddAddr({
       ...formData.value,
-    }).then((res) => {
-      toast.success('保存成功')
-      console.log('------------------------------')
-      console.log(res)
-      console.log('------------------------------')
+      address: siteName.join('') + formData.value.detail,
     })
+    toast.success('保存成功')
   }
   uni.$emit('updataSite')
   setTimeout(() => {
     back()
   }, 1500)
 }
+function getAreaNames(codes) {
+  const result = []
 
+  // 确保编码是字符串类型
+  const strCodes = codes.map(code => String(code))
+  // 查找省份
+  const province = colPickerData.find(item => item.value === strCodes[0])
+  if (province) {
+    result.push(province.text)
+
+    // 查找城市
+    if (province.children && strCodes[1]) {
+      const city = province.children.find(item => item.value === strCodes[1])
+      if (city) {
+        result.push(city.text)
+
+        // 查找区县
+        if (city.children && strCodes[2]) {
+          const district = city.children.find(item => item.value === strCodes[2])
+          if (district)
+            result.push(district.text)
+        }
+      }
+    }
+  }
+
+  return result
+}
 function columnChange({ selectedItem, resolve, finish }) {
+  console.log('------------------------------')
+  console.log(colPickerData)
+  console.log('------------------------------')
   const areaData = findChildrenByCode(colPickerData, selectedItem.value)
   if (areaData && areaData.length) {
     resolve(
@@ -204,7 +238,7 @@ function handleConfirm({ value }) {
           门牌号
         </text>
         <input
-          v-model="formData.address" class="text-right text-[28rpx] text-[#333]" placeholder="例：A座3单元801"
+          v-model="formData.detail" class="text-right text-[28rpx] text-[#333]" placeholder="例：A座3单元801"
           placeholder-class="text-[#999]"
         >
       </view>

@@ -9,7 +9,7 @@
 
 <script lang="ts" setup>
 import { useMessage, useToast } from 'wot-design-uni'
-// import {  } from '@/api/index'
+import { getBalanceDetails } from '@/api/index'
 import { useUserStore } from '@/store'
 import { back, go, reloadUrl } from '@/utils/tools'
 
@@ -69,6 +69,13 @@ function changeTimeFilter() {
   // 这里可以实现时间筛选的下拉选择
   message.alert('时间筛选功能')
 }
+onLoad(() => {
+  getBalanceDetails().then((res) => {
+    console.log('------------------------------')
+    console.log(res)
+    console.log('------------------------------')
+  })
+})
 </script>
 
 <template>

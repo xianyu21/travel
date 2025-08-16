@@ -7,7 +7,7 @@
 }
 </route>
 
-<script lang="ts" setup>
+<script setup>
 import { useMessage, useToast } from 'wot-design-uni'
 // import { } from '@/api/index'
 import { useUserStore } from '@/store'
@@ -16,6 +16,11 @@ import { back, go, reloadUrl } from '@/utils/tools'
 const toast = useToast()
 const message = useMessage()
 const userStore = useUserStore()
+onShow(() => {
+  if (userStore.isLogined) {
+    userStore.getUserInfo()
+  }
+})
 </script>
 
 <template>
@@ -27,13 +32,13 @@ const userStore = useUserStore()
     <!--  -->
     <view class="mx-[30rpx] mt-[30rpx] flex items-center justify-between">
       <view class="flex items-center gap-[30rpx]">
-        <image src="" mode="scaleToFill" class="h-[120rpx] w-[120rpx] rounded-full bg-[#e6e7e6]" />
+        <image :src="userStore.userInfo.headUrl" mode="scaleToFill" class="h-[120rpx] w-[120rpx] rounded-full" />
         <view class="flex flex-col gap-[14rpx]">
           <text class="text-[32rpx] text-[#000000]">
-            冯宝宝
+            {{ userStore.userInfo.realName }}
           </text>
           <text class="text-[22rpx] text-[#747474]">
-            ID:4545454
+            ID: {{ userStore.userInfo.id }}
           </text>
         </view>
       </view>
@@ -86,7 +91,7 @@ const userStore = useUserStore()
         </view>
         <view class="flex items-center justify-between gap-[10rpx]">
           <text class="text-[32rpx] font-bold" @click="go('/packages/mine/balance')">
-            135.00
+            {{ userStore.userInfo.balance }}
           </text>
           <view class="h-[52rpx] w-[140rpx] rounded-full bg-[#FFFFFF] text-center text-[28rpx] text-[#798CF7] leading-[52rpx]">
             去充值

@@ -7,40 +7,49 @@
 }
 </route>
 
-<script lang="ts" setup>
-import { ref } from 'vue'
+<script setup>
 import { useMessage, useToast } from 'wot-design-uni'
+import { getServiceDetail, getServiceList, getTravelPunishOrder, getTravelTrade } from '@/api/index'
+import PaymentPicker from '@/components/PaymentPicker.vue'
 import ServiceProjectPicker from '@/components/ServiceProjectPicker.vue'
 import ServiceTimePicker from '@/components/ServiceTimePicker.vue'
 import { useUserStore } from '@/store'
-import { back, go, reloadUrl } from '@/utils/tools'
+import { back, go } from '@/utils/tools'
 
 const toast = useToast()
 const message = useMessage()
 const userStore = useUserStore()
 const isCheck = ref(false)
+
 // 表单数据
 const formData = ref({
-  serviceTime: '', // 服务时间
-  serviceProject: '', // 服务项目
-  location: '江北区红鼎国际A栋601', // 旅接地点
-  fee: 499, // 服务费用
-  gender: '男', // 旅接性别
-  hasCar: '是', // 是否带车
-  fuelFee: 20, // 预估燃油费
-  coupon: '暂无可用', // 优惠券
-  paymentMethod: '建设银行储蓄卡', // 支付方式
-  paymentAccount: '9943', // 支付账号
-  agreed: true, // 是否同意协议
+  serviceTimeStart: '', // ?
+  couponRecordId: '', // ?
+  serviceCount: 1,
+  addrId: '',
+  address: '',
+  serviceId: '',
+  serviceName: '',
+  durationId: '',
+  durationName: '',
+  gender: '',
+  hasCar: '', // 是否带车
+  payType: '', // 支付方式 1微信  2支付宝
+})
+const payInfo = ref({
+  estimateFare: '',
+  maxServiceTime: '',
+  totalMoney: 0,
+  totalPay: 0,
 })
 
-// 支付方式选项
-const paymentOptions = [
-  { label: '微信支付', value: '微信支付', icon: 'wechat' },
-  { label: '支付宝支付', value: '支付宝支付', icon: 'alipay' },
-  { label: '建设银行储蓄卡', value: '建设银行储蓄卡', icon: 'bank-card' },
-]
-
+const serviceList = ref([])
+const durationList = ref([])
+const addressList = ref([])
+const couponInfo = ref({
+  couponName: '',
+  discount: '',
+})
 // 时间选择器相关
 const showTimePicker = ref(false)
 
@@ -56,8 +65,10 @@ function closeTimePicker() {
 
 // 确认时间选择
 function confirmTimeSelection(timeData) {
-  formData.value.serviceTime = timeData.fullTime
+  formData.value.serviceTimeStart = `${timeData.fullTime}` + `:00`
   showTimePicker.value = false
+
+  calc()
 }
 
 // 服务项目选择器相关
@@ -77,6 +88,7 @@ function closeProjectPicker() {
 function confirmProjectSelection(projectData) {
   formData.value.serviceProject = projectData.names
   showProjectPicker.value = false
+  calc() // 项目选择后重新计算价格
 }
 
 // 选择优惠券
@@ -86,8 +98,40 @@ function selectCoupon() {
 
 // 提交订单
 function submitOrder() {
-  if (!formData.value.agreed) {
+  console.log('------------------------------')
+  console.log(formData.value)
+  console.log('------------------------------')
+  if (!isCheck.value) {
     toast.show('请先阅读并同意《订单发布须知》')
+    return
+  }
+  if (!formData.value.serviceTimeStart) {
+    toast.show('请选择服务时间')
+    return
+  }
+  if (!formData.value.serviceId) {
+    toast.show('请选择服务')
+    return
+  }
+
+  if (!formData.value.durationId) {
+    toast.show('请选择服务时长')
+    return
+  }
+  if (!formData.value.addrId) {
+    toast.show('请选择地址')
+    return
+  }
+  if (!formData.value.gender) {
+    toast.show('请选择性别')
+    return
+  }
+  if (!formData.value.hasCar) {
+    toast.show('请选择是否有车')
+    return
+  }
+  if (!formData.value.payType) {
+    toast.show('请选择支付方式')
     return
   }
 
@@ -97,32 +141,86 @@ function submitOrder() {
     confirmButtonText: '确认',
     cancelButtonText: '取消',
   }).then(() => {
-    toast.show('订单提交成功')
-    setTimeout(() => {
-      back()
-    }, 1500)
+    getTravelPunishOrder({
+      ...formData.value,
+    }).then((res) => {
+      console.log(res)
+      toast.show('订单提交成功')
+      setTimeout(() => {
+        back()
+      }, 1500)
+    })
   }).catch(() => {
     // 取消操作
   })
 }
+
+function onProjectPicker() {
+  const data = serviceList.value.filter(el => el.serviceId == formData.value.serviceId)
+  formData.value.serviceName = data[0].serviceName
+  showProjectPicker.value = false
+  getServiceDetail({
+    serviceId: formData.value.serviceId,
+  }).then((res) => {
+    durationList.value = res.data
+  })
+}
+//
+const show1 = ref(false)
+function onDuration() {
+  const data = durationList.value.filter(el => el.durationId === formData.value.durationId)
+  formData.value.durationName = data[0].hour
+  show1.value = false
+  calc()
+}
+// 计算价格
+function calc() {
+  if (!formData.value.serviceId) {
+    return toast.show('请选择服务')
+  }
+  getTravelTrade({
+    ...formData.value,
+  }).then((res) => {
+    console.log(res)
+    payInfo.value = res.data
+  })
+}
+function genderChange(e) {
+  formData.value.gender = e
+  calc()
+}
+function hasCarChange(e) {
+  formData.value.hasCar = e
+  calc()
+}
+onLoad(async () => {
+  const res = await getServiceList()
+  serviceList.value = res.data
+  calc()
+  uni.$on('updataAddress', (data) => {
+    addressList.value = data
+    formData.value.address = data.address
+    formData.value.addrId = data.addrId
+    calc()
+  })
+  uni.$on('updataCoupon', (data) => {
+    couponInfo.value = data
+    formData.value.couponRecordId = data.couponRecordId
+    calc()
+  })
+})
 </script>
 
 <template>
   <view class="bg-base-007 pb-[162rpx]">
-    <ServiceTimePicker
-      :show="showTimePicker"
-      @close="closeTimePicker"
-      @confirm="confirmTimeSelection"
-    />
-    <ServiceProjectPicker
-      :show="showProjectPicker"
-      :multiple="true"
-      @close="closeProjectPicker"
+    <ServiceTimePicker :show="showTimePicker" @close="closeTimePicker" @confirm="confirmTimeSelection" />
+    <!-- <ServiceProjectPicker
+      :show="showProjectPicker" :multiple="true" @close="closeProjectPicker"
       @confirm="confirmProjectSelection"
-    />
+    /> -->
     <wd-navbar
-      title="发布需求" left-arrow custom-style="background-color: transparent !important;" :placeholder="true" :fixed="false" :bordered="false" :safe-area-inset-top="true"
-      @click-left="back"
+      title="发布需求" left-arrow custom-style="background-color: transparent !important;" :placeholder="true"
+      :fixed="false" :bordered="false" :safe-area-inset-top="true" @click-left="back"
     />
     <view class="mx-[30rpx] mt-[30rpx] rounded-[20rpx] bg-[#fff] p-[30rpx]">
       <view class="flex items-center justify-between" @click="selectServiceTime">
@@ -131,7 +229,7 @@ function submitOrder() {
         </text>
         <view class="flex items-center">
           <text class="text-[28rpx] text-[#000000]">
-            {{ formData.serviceTime || '' }}
+            {{ formData.serviceTimeStart || '' }}
           </text>
           <wd-icon name="chevron-right" size="28rpx" color="#717171" />
         </view>
@@ -144,18 +242,33 @@ function submitOrder() {
         </text>
         <view class="flex items-center">
           <text class="text-[28rpx] text-[#000000]">
-            {{ formData.serviceProject || '' }}
+            {{ formData.serviceName || '' }}
           </text>
           <wd-icon name="chevron-right" size="28rpx" color="#717171" />
         </view>
       </view>
-      <view class="mt-[50rpx] flex items-center justify-between">
+
+      <view v-if="formData.serviceId" class="mt-[50rpx] flex items-center justify-between gap-[30rpx]" @click="show1 = true">
+        <text class="text-[28rpx] text-[#000000] font-bold">
+          服务时长
+        </text>
+        <view class="flex flex-1 items-center justify-end">
+          <text v-if="formData?.durationName" class="text-[28rpx] text-[#000000]">
+            {{ formData?.durationName }}小时
+          </text>
+          <wd-icon name="chevron-right" size="28rpx" color="#717171" />
+        </view>
+      </view>
+      <view
+        class="mt-[50rpx] flex items-center justify-between gap-[30rpx]"
+        @click="go('/packages/mine/address', { type: 2 })"
+      >
         <text class="text-[28rpx] text-[#000000] font-bold">
           旅接地点
         </text>
-        <view class="flex items-center">
+        <view class="flex flex-1 items-center justify-end">
           <text class="text-[28rpx] text-[#000000]">
-            江北区红鼎国际A栋601
+            {{ formData?.address }}
           </text>
           <wd-icon name="chevron-right" size="28rpx" color="#717171" />
         </view>
@@ -166,7 +279,7 @@ function submitOrder() {
         </text>
         <view class="flex items-center">
           <text class="text-[28rpx] text-[#EA333F]">
-            ￥499
+            ￥{{ payInfo.totalMoney }}
           </text>
         </view>
       </view>
@@ -178,15 +291,19 @@ function submitOrder() {
           旅接性别
         </text>
         <view class="flex items-center gap-[30rpx]">
-          <view>
-            <wd-icon name="check-circle-filled" size="40rpx" color="#0669EB" />
-            <wd-icon name="circle" size="40rpx" color="#0669EB" />
-            <text>男</text>
+          <view class="flex items-center gap-[10rpx]" @click="genderChange('男')">
+            <wd-icon v-if="formData.gender === '男'" name="check-circle-filled" size="40rpx" color="#0669EB" />
+            <wd-icon v-else name="circle" size="40rpx" color="#0669EB" />
+            <text class="text-[28rpx] text-[#333333]">
+              男
+            </text>
           </view>
-          <view>
-            <wd-icon name="check-circle-filled" size="40rpx" color="#0669EB" />
-            <wd-icon name="circle" size="40rpx" color="#0669EB" />
-            <text>女</text>
+          <view class="flex items-center gap-[10rpx]" @click=" genderChange('女')">
+            <wd-icon v-if="formData.gender === '女'" name="check-circle-filled" size="40rpx" color="#0669EB" />
+            <wd-icon v-else name="circle" size="40rpx" color="#0669EB" />
+            <text class="text-[28rpx] text-[#333333]">
+              女
+            </text>
           </view>
         </view>
       </view>
@@ -195,15 +312,20 @@ function submitOrder() {
           是否带车
         </text>
         <view class="flex items-center gap-[30rpx]">
-          <view>
-            <wd-icon name="check-circle-filled" size="40rpx" color="#0669EB" />
-            <wd-icon name="circle" size="40rpx" color="#0669EB" />
-            <text>是</text>
+          <!-- formData.hasCar = '是' -->
+          <view class="flex items-center gap-[10rpx]" @click="hasCarChange('1')">
+            <wd-icon v-if="formData.hasCar === '1'" name="check-circle-filled" size="40rpx" color="#0669EB" />
+            <wd-icon v-else name="circle" size="40rpx" color="#0669EB" />
+            <text class="text-[28rpx] text-[#333333]">
+              是
+            </text>
           </view>
-          <view>
-            <wd-icon name="check-circle-filled" size="40rpx" color="#0669EB" />
-            <wd-icon name="circle" size="40rpx" color="#0669EB" />
-            <text>否</text>
+          <view class="flex items-center gap-[10rpx]" @click="hasCarChange('-1')">
+            <wd-icon v-if="formData.hasCar === '-1'" name="check-circle-filled" size="40rpx" color="#0669EB" />
+            <wd-icon v-else name="circle" size="40rpx" color="#0669EB" />
+            <text class="text-[28rpx] text-[#333333]">
+              否
+            </text>
           </view>
         </view>
       </view>
@@ -216,70 +338,36 @@ function submitOrder() {
         </text>
         <view class="flex items-center">
           <text class="text-[28rpx] text-[#EA333F]">
-            ￥20
+            ￥{{ payInfo.estimateFare }}
           </text>
         </view>
       </view>
     </view>
     <!--  -->
-    <view class="mx-[30rpx] mt-[30rpx] rounded-[20rpx] bg-[#fff] p-[30rpx]">
+    <view
+      class="mx-[30rpx] mt-[30rpx] rounded-[20rpx] bg-[#fff] p-[30rpx]"
+      @click="go('/packages/mine/coupon_available')"
+    >
       <view class="flex items-center justify-between">
         <text class="text-[28rpx] text-[#000000] font-bold">
           优惠券
         </text>
         <view class="flex items-center">
-          <text class="text-[28rpx] text-[#BABABA]">
-            暂无可用
+          <text class="text-[28rpx]" :class="couponInfo?.couponName ? 'text-[#000000]' : 'text-[#BABABA]'">
+            {{ `${couponInfo?.couponName}-${couponInfo?.discount}元` || '暂无可用' }}
           </text>
           <wd-icon name="chevron-right" size="28rpx" color="#717171" />
         </view>
       </view>
     </view>
-    <!--  -->
-    <view class="mx-[30rpx] mt-[30rpx] rounded-[20rpx] bg-[#fff] p-[30rpx]">
-      <view class="flex items-center justify-between">
-        <view class="flex items-center">
-          <image
-            src="@img/wx.png"
-            mode="scaleToFill"
-            class="mr-[16rpx] h-[32rpx] w-[36rpx]"
-          />
-          <text class="text-[28rpx] text-[#000000] font-bold">
-            微信支付
-          </text>
-        </view>
-        <view class="flex items-center">
-          <wd-icon name="check-circle-filled" size="40rpx" color="#0669EB" />
-          <wd-icon name="circle" size="40rpx" color="#0669EB" />
-        </view>
-      </view>
-    </view>
-    <!--  -->
-    <view class="mx-[30rpx] mt-[30rpx] rounded-[20rpx] bg-[#fff] p-[30rpx]">
-      <view class="flex items-center justify-between">
-        <view class="flex items-center">
-          <image
-            src="@img/zfb.png"
-            mode="scaleToFill"
-            class="mr-[16rpx] h-[34.53rpx] w-[34.53rpx]"
-          />
-          <text class="text-[28rpx] text-[#000000] font-bold">
-            支付宝支付
-          </text>
-        </view>
-        <view class="flex items-center">
-          <wd-icon name="check-circle-filled" size="40rpx" color="#0669EB" />
-          <wd-icon name="circle" size="40rpx" color="#0669EB" />
-        </view>
-      </view>
-    </view>
+    <PaymentPicker v-model="formData.payType" />
     <!--  -->
     <view class="mt-[130rpx] flex items-center justify-center">
       <wd-checkbox v-model="isCheck" size="large" checked-color="#0669EB" />
       <text class="text-[24rpx] text-[#6E6E6E]">
         已阅读并同意
       </text>
-      <text class="text-[24rpx] text-[#43CBFF]" @click="go('/packages/public/rich_text', { id: 2 })">
+      <text class="text-[24rpx] text-[#43CBFF]" @click="go('/packages/public/rich_text', { adType: 7 })">
         《订单发布须知》
       </text>
     </view>
@@ -291,18 +379,66 @@ function submitOrder() {
             合计：
           </text>
           <text class="price">
-            ¥{{ formData.fee }}
+            ¥{{ payInfo.totalPay }}
           </text>
         </view>
-        <view class="h-[80rpx] w-[254rpx] rounded-full text-center text-[28rpx] text-[#FFFFFF] leading-[80rpx]" style="background: linear-gradient( 87deg, #0788F3 0%, #0769EB 100%);">
+        <view
+          class="h-[80rpx] w-[254rpx] rounded-full text-center text-[28rpx] text-[#FFFFFF] leading-[80rpx]"
+          style="background: linear-gradient( 87deg, #0788F3 0%, #0769EB 100%);" @click="submitOrder"
+        >
           发布需求并支付
         </view>
       </view>
     </view>
+    <!--  -->
+    <wd-popup v-model="showProjectPicker" position="bottom" custom-style="border-radius:32rpx 32rpx 0 0;">
+      <view class="flex flex-col p-[30rpx]">
+        <view class="text-[28rpx] text-[#333333] font-bold">
+          服务项目
+        </view>
+        <wd-radio-group v-model="formData.serviceId" cell shape="button">
+          <wd-radio v-for="item in serviceList" :key="item.id" :value="item.serviceId">
+            {{ item.serviceName }}
+          </wd-radio>
+        </wd-radio-group>
+        <view class="mt-[20rpx] flex">
+          <view
+            class="ml-[20rpx] h-[80rpx] w-full rounded-full text-center text-[28rpx] text-[#FFFFFF] leading-[80rpx]"
+            style="background: linear-gradient( 87deg, #0788F3 0%, #0769EB 100%);" @click="onProjectPicker"
+          >
+            确定
+          </view>
+        </view>
+      </view>
+    </wd-popup>
+    <wd-popup v-model="show1" position="bottom" custom-style="border-radius:32rpx 32rpx 0 0;">
+      <view class="flex flex-col p-[30rpx]">
+        <view class="text-[28rpx] text-[#333333] font-bold">
+          服务项目
+        </view>
+        <wd-radio-group v-model="formData.durationId" cell shape="button">
+          <wd-radio v-for="item in durationList" :key="item.id" :value="item.durationId">
+            {{ item.hour }}小时
+          </wd-radio>
+        </wd-radio-group>
+        <view class="mt-[20rpx] flex">
+          <view
+            class="ml-[20rpx] h-[80rpx] w-full rounded-full text-center text-[28rpx] text-[#FFFFFF] leading-[80rpx]"
+            style="background: linear-gradient( 87deg, #0788F3 0%, #0769EB 100%);" @click="onDuration"
+          >
+            确定
+          </view>
+        </view>
+      </view>
+    </wd-popup>
   </view>
 </template>
 
 <style lang="scss" scoped>
+:deep(.wd-radio.is-button.is-checked .wd-radio__label) {
+  background: #bde2ff;
+}
+
 .demand-page {
   min-height: 100vh;
   background-color: #f5f5f5;

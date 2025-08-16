@@ -17,11 +17,19 @@ const toast = useToast()
 const message = useMessage()
 const userStore = useUserStore()
 const addressList = ref([])
-function editAddress(addrId: number) {
+function editAddress(item) {
   console.log('------------------------------')
-  console.log(addrId)
+  console.log(item)
   console.log('------------------------------')
-  go('/packages/mine/address_edit', { addrId })
+  if (type.value === 1) {
+    go('/packages/mine/address_edit', { addrId: item.addrId })
+  }
+  else {
+    uni.$emit('updataAddress', item)
+    setTimeout(() => {
+      back()
+    }, 200)
+  }
 }
 function addNewAddress() {
   go('/packages/mine/address_edit')
@@ -39,7 +47,12 @@ function init() {
     }
   })
 }
-onLoad(() => {
+const type = ref(1)
+onLoad((options) => {
+  if (options.type) {
+    type.value = Number(options.type)
+  }
+
   init()
   uni.$on('updataSite', () => {
     init()
@@ -59,6 +72,7 @@ onLoad(() => {
       <view
         v-for="item in addressList" :key="item.id"
         class="mb-[30rpx] flex items-center justify-between rounded-[20rpx] bg-white p-[30rpx]"
+        @click.stop="editAddress(item)"
       >
         <view class="w-full">
           <view class="mb-[20rpx] flex items-center justify-between">
@@ -86,9 +100,9 @@ onLoad(() => {
         <view class="flex items-center gap-[20rpx]">
           <image
             src="@img/img-104.png" mode="scaleToFill" class="h-[32rpx] w-[32rpx]"
-            @click="editAddress(item.addrId)"
+            @click.stop="editAddress(item)"
           />
-          <wd-icon name="delete" size="32rpx" color="#A6A7A8" @click="deladdress(item.addrId)" />
+          <wd-icon name="delete" size="32rpx" color="#A6A7A8" @click.stop="deladdress(item.addrId)" />
         </view>
       </view>
       <template v-if="addressList.length === 0">

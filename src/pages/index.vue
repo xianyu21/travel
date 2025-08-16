@@ -1,13 +1,15 @@
-<route lang="jsonc" type="home">{
+<route lang="jsonc" type="home">
+{
   "layout": "tabbar",
   "style": {
     "navigationStyle": "custom",
     "navigationBarTitleText": "首页"
   }
-}</route>
+}
+</route>
 
 <script lang="ts" setup>
-import { getSpotPage, getTravelList, getServicePlace } from '@/api/index'
+import { getByType, getServicePlace, getSpotPage, getTravelList } from '@/api/index'
 import { go } from '@/utils/tools'
 
 defineOptions({
@@ -123,9 +125,11 @@ async function init() {
   console.log('------------------------------')
   travelList.value = res.data.list
 }
-const show = ref(true)
+const show = ref(false)
 const value = ref(1)
-onLoad(() => {
+const swiperList1 = ref([])
+const swiperList2 = ref([])
+onLoad(async () => {
   getSpotPage({
     page: {
       page: 1,
@@ -135,17 +139,28 @@ onLoad(() => {
     spotList.value = res.data.list
   })
   init()
+  const res = await getByType({
+    adType: 1,
+  })
+  swiperList1.value = res.data
+  const ret = await getByType({
+    adType: 2,
+  })
+  swiperList2.value = ret.data
+  console.log('------------------------------')
+  console.log(ret)
+  console.log('------------------------------')
 })
 function onPlace(travel) {
-  console.log('------------------------------');
-  console.log(travel);
-  console.log('------------------------------');
+  console.log('------------------------------')
+  console.log(travel)
+  console.log('------------------------------')
   getServicePlace({
-    receiveUserId: travel.receiveUserId
-  }).then(res => {
-    console.log('------------------------------');
-    console.log(res);
-    console.log('------------------------------');
+    receiveUserId: travel.receiveUserId,
+  }).then((res) => {
+    console.log('------------------------------')
+    console.log(res)
+    console.log('------------------------------')
   })
 }
 </script>
@@ -166,7 +181,8 @@ function onPlace(travel) {
       </view>
     </view>
     <view class="mx-[30rpx]">
-      <image src="" mode="scaleToFill" class="h-[202rpx] w-full rounded-[20rpx] bg-[#eaeaea]" />
+      <!-- <image src="" mode="scaleToFill" class="h-[202rpx] w-full rounded-[20rpx] bg-[#eaeaea]" /> -->
+      <wd-swiper :list="swiperList1" value-key="imgUrls" height="202rpx" custom-class="bg-[#eaeaea]" />
     </view>
     <!-- 热门功能 -->
     <view class="hot-features">
@@ -201,7 +217,8 @@ function onPlace(travel) {
     <view class="mx-[30rpx] mt-[30rpx]">
       <div class="grid grid-flow-col grid-rows-3 gap-[28rpx]">
         <div
-          class="col-span-2 row-span-6 h-[352rpx] flex items-center justify-center rounded-[16rpx] bg-[#eaeaea] text-xl font-bold">
+          class="col-span-2 row-span-6 h-[352rpx] flex items-center justify-center rounded-[16rpx] bg-[#eaeaea] text-xl font-bold"
+        >
           热门景点
         </div>
         <div class="row-span-3 h-[162rpx] flex items-center justify-center rounded-[16rpx] bg-[#eaeaea]">
@@ -213,7 +230,7 @@ function onPlace(travel) {
       </div>
     </view>
     <view class="mx-[30rpx] mt-[30rpx]">
-      <image src="" mode="scaleToFill" class="h-[154rpx] w-full rounded-[20rpx] bg-[#eaeaea]" />
+      <image :src="swiperList2[0].imgUrls" mode="scaleToFill" class="h-[154rpx] w-full rounded-[20rpx] bg-[#eaeaea]" />
     </view>
     <view class="mx-[30rpx] mt-[32rpx] flex items-center justify-between text-[32rpx]">
       <view class="flex items-center">
@@ -246,49 +263,73 @@ function onPlace(travel) {
         <text>带车</text>
       </view>
       <view class="flex flex-col gap-[32rpx]">
-        <view v-for="(travel, index) in travelList" :key="travel.id"
-          @click="go('/packages/travel/details', { receiveUserId: travel.receiveUserId })">
+        <view
+          v-for="(travel, index) in travelList" :key="travel.id"
+          @click="go('/packages/travel/details', { receiveUserId: travel.receiveUserId })"
+        >
           <!-- <template v-if="index == 1">
             <image src="" mode="scaleToFill" class="h-[154rpx] w-full rounded-[20rpx] bg-[#eaeaea]" />
           </template>
 <template v-else> -->
           <view class="travel-card gap-[18rpx] rounded-[20rpx] p-[30rpx]">
             <view class="relative w-[190rpx] overflow-hidden">
-              <image src="@img/img-006.png" mode="scaleToFill" class="absolute left-0 top-0 z-1 h-[36rpx] w-[86rpx]" />
+              <!-- <image src="@img/img-006.png" mode="scaleToFill" class="absolute left-0 top-0 z-1 h-[36rpx] w-[86rpx]" /> -->
+              <view
+                v-if="travel?.isService === 1"
+                class="absolute left-0 top-0 z-1 h-[36rpx] w-[86rpx] text-center text-[20rpx] text-[#fff] leading-[36rpx]"
+                style="background: linear-gradient( 268deg, #FFCE8E 0%, #FFA64D 100%);border-radius:  12rpx 0rpx ;"
+              >
+                可服务
+              </view>
+              <view
+                v-else
+                class="absolute left-0 top-0 z-1 h-[36rpx] w-[86rpx] text-center text-[20rpx] text-[#fff] leading-[36rpx]"
+                style="background: linear-gradient( 92deg, #FFB38E 0%, #FF774D 100%);border-radius:  12rpx 0rpx ;"
+              >
+                服务中
+              </view>
               <image :src="travel.headUrl" mode="aspectFill" class="travel-avatar h-[190rpx] w-full rounded-[20rpx]" />
-              <view class="absolute bottom-0 left-0 h-[36rpx] w-full text-center text-[20rpx] text-[#FFFFFF]"
-                style="background: linear-gradient( 268deg, #FF8E99 0%, #FF4D54 100%);border-radius:0 0 20rpx 20rpx;">
+              <view
+                class="absolute bottom-0 left-0 h-[36rpx] w-full text-center text-[20rpx] text-[#FFFFFF]"
+                style="background: linear-gradient( 268deg, #FF8E99 0%, #FF4D54 100%);border-radius:0 0 20rpx 20rpx;"
+              >
                 立享服务
               </view>
             </view>
-            <view class="flex flex-col justify-between">
+            <view class="w-full flex flex-1 flex-col justify-between">
               <view class="flex items-center justify-between">
                 <view class="flex items-center gap-[10rpx]">
                   <text class="text-[32rpx] text-[#191A1D] text-[#191A1D]">
                     {{ travel.realName }}
                   </text>
-                  <image v-if="travel.gender == '女'" src="@img/girl.png" mode="scaleToFill"
-                    class="h-[32rpx] w-[32rpx]" />
-                  <image v-if="travel.gender == '男'" src="@img/boy.png" mode="scaleToFill"
-                    class="h-[32rpx] w-[32rpx]" />
-                  <image src="@img/car.png" mode="scaleToFill" class="h-[32rpx] w-[32rpx]" />
+                  <image
+                    v-if="travel.gender == '女'" src="@img/girl.png" mode="scaleToFill"
+                    class="h-[32rpx] w-[32rpx]"
+                  />
+                  <image
+                    v-if="travel.gender == '男'" src="@img/boy.png" mode="scaleToFill"
+                    class="h-[32rpx] w-[32rpx]"
+                  />
+                  <image v-if="travel.hasCar === 1" src="@img/car.png" mode="scaleToFill" class="h-[32rpx] w-[32rpx]" />
                 </view>
                 <view>
                   <image src="@img/img-007.png" mode="scaleToFill" class="h-[22rpx] w-[22rpx]" />
                   <text class="text-[24rpx] text-[#333233]">
-                    16.8km
+                    {{ travel.distance || 0 }}km
                   </text>
                 </view>
               </view>
-              <view class="text-[20rpx] text-[#555555]">
-               {{travel.score || 0}}分 I 已服务{{travel.receiveCount || 0}}单
+              <view class="bg-009 h-[40rpx] pl-[20rpx] text-[20rpx] text-[#555555] leading-[40rpx]">
+                {{ travel.score || 0 }}分 I 已服务{{ travel.receiveCount || 0 }}单
               </view>
               <view class="flex items-center justify-between">
                 <view class="text-[20rpx] text-[#787878]">
-                  为人活泼开朗，个性自信大方会帮忙拍照
+                  {{ travel?.introduction }}
                 </view>
-                <view class="h-[52rpx] w-[140rpx] rounded-full text-center text-[24rpx] text-[#fff] leading-[52rpx]"
-                  style="background: linear-gradient( 90deg, #078DF4 0%, #066BEB 100%);" @click.stop="onPlace(travel)">
+                <view
+                  class="h-[52rpx] w-[140rpx] rounded-full text-center text-[24rpx] text-[#fff] leading-[52rpx]"
+                  style="background: linear-gradient( 90deg, #078DF4 0%, #066BEB 100%);" @click.stop="onPlace(travel)"
+                >
                   立即下单
                 </view>
               </view>
@@ -299,85 +340,132 @@ function onPlace(travel) {
       </view>
     </view>
     <!--  -->
-    <wd-popup v-model="show" position="bottom"
+    <wd-popup
+      v-model="show" position="bottom"
       custom-style="border-radius:32rpx 32rpx 0 0;background: linear-gradient( 180deg, #F8F8F8 0%, #EAF6FF 100%);"
-      :z-index="99999" :safe-area-inset-bottom="true">
+      :z-index="99999" :safe-area-inset-bottom="true"
+    >
       <view class="m-[30rpx] flex gap-[30rpx]">
         <view class="relative">
-          <image src="" mode="scaleToFill" class="w-[130rpx] h-[132rpx] bg-[#eaeaea]" />
+          <image src="" mode="scaleToFill" class="h-[132rpx] w-[130rpx] bg-[#eaeaea]" />
           <view
-            class="w-[86rpx] h-[36rpx] text-[#fff] text-[20rpx] text-center leading-[36rpx] absolute left-0 bottom-0"
-            style="background: linear-gradient( 268deg, #FFCE8E 0%, #FFA64D 100%);border-radius:  0rpx 12rpx;">可服务
+            class="absolute bottom-0 left-0 h-[36rpx] w-[86rpx] text-center text-[20rpx] text-[#fff] leading-[36rpx]"
+            style="background: linear-gradient( 268deg, #FFCE8E 0%, #FFA64D 100%);border-radius:  0rpx 12rpx;"
+          >
+            可服务
           </view>
         </view>
-        <view class="flex flex-col justify-between w-full">
+        <view class="w-full flex flex-col justify-between">
           <view class="flex items-center gap-[10rpx]">
-            <text class="text-[#191A1D] text-[32rpx] font-bold">冯宝宝</text>
+            <text class="text-[32rpx] text-[#191A1D] font-bold">
+              冯宝宝
+            </text>
             <image src="@img/girl.png" mode="scaleToFill" class="h-[32rpx] w-[32rpx]" />
             <image src="@img/boy.png" mode="scaleToFill" class="h-[32rpx] w-[32rpx]" />
             <image src="@img/car.png" mode="scaleToFill" class="h-[32rpx] w-[32rpx]" />
-            <text class="text-[#D62929] text-[24prx]">5.0分</text>
+            <text class="text-[#D62929] text-[24prx]">
+              5.0分
+            </text>
           </view>
-          <view class="text-[#787878] text-[24rpx] truncate w-[450rpx]">为人活泼开朗，个性自信大方，会帮忙拍照，1为人活泼开朗，个性自信大方，会帮忙拍照，1...
+          <view class="w-[450rpx] truncate text-[24rpx] text-[#787878]">
+            为人活泼开朗，个性自信大方，会帮忙拍照，1为人活泼开朗，个性自信大方，会帮忙拍照，1...
           </view>
           <view class="flex items-center gap-[18rpx]">
             <view class="flex items-center gap-[4rpx]">
-              <image src="@img/img-028.png" mode="scaleToFill" class="w-[23rpx] h-[30rpx]" />
-              <text class="text-[#002C4F] text-[24rpx]">爽约包退</text>
+              <image src="@img/img-028.png" mode="scaleToFill" class="h-[30rpx] w-[23rpx]" />
+              <text class="text-[24rpx] text-[#002C4F]">
+                爽约包退
+              </text>
             </view>
             <view class="flex items-center gap-[4rpx]">
-              <image src="@img/img-028.png" mode="scaleToFill" class="w-[23rpx] h-[30rpx]" />
-              <text class="text-[#002C4F] text-[24rpx]">实名认证</text>
+              <image src="@img/img-028.png" mode="scaleToFill" class="h-[30rpx] w-[23rpx]" />
+              <text class="text-[24rpx] text-[#002C4F]">
+                实名认证
+              </text>
             </view>
             <view class="flex items-center gap-[4rpx]">
-              <image src="@img/img-028.png" mode="scaleToFill" class="w-[23rpx] h-[30rpx]" />
-              <text class="text-[#002C4F] text-[24rpx]">资格证书</text>
+              <image src="@img/img-028.png" mode="scaleToFill" class="h-[30rpx] w-[23rpx]" />
+              <text class="text-[24rpx] text-[#002C4F]">
+                资格证书
+              </text>
             </view>
           </view>
         </view>
       </view>
-      <view class="bg-[#fff]  rounded-[12rpx] m-[30rpx] ">
-        <view class="p-[30rpx] flex  gap-[20rpx]" style="border-bottom: 2rpx solid #F6F6F6;">
-          <image src="" mode="scaleToFill" class="w-[150rpx] h-[152rpx] bg-[#eaeaea] rounded-[12rpx]" />
-          <view class="flex flex-col justify-between w-full flex-1">
+      <view class="m-[30rpx] rounded-[12rpx] bg-[#fff]">
+        <view class="flex gap-[20rpx] p-[30rpx]" style="border-bottom: 2rpx solid #F6F6F6;">
+          <image src="" mode="scaleToFill" class="h-[152rpx] w-[150rpx] rounded-[12rpx] bg-[#eaeaea]" />
+          <view class="w-full flex flex-1 flex-col justify-between">
             <view class="flex items-center gap-[10rpx]">
-              <text class="text-[#FF0011] text-[44rpx] text-price">499</text>
-              <view class="w-[108rpx] h-[36rpx] text-[#fff] text-[20rpx] text-center leading-[36rpx]"
-                style="background: linear-gradient( 268deg, #FFCE8E 0%, #FFA64D 100%);border-radius: 12rpx 0rpx;">限时秒杀
+              <text class="text-price text-[44rpx] text-[#FF0011]">
+                499
+              </text>
+              <view
+                class="h-[36rpx] w-[108rpx] text-center text-[20rpx] text-[#fff] leading-[36rpx]"
+                style="background: linear-gradient( 268deg, #FFCE8E 0%, #FFA64D 100%);border-radius: 12rpx 0rpx;"
+              >
+                限时秒杀
               </view>
               <view class="flex items-center">
-                <text class="text-[#A6A7A8] text-[24prx]">项目详情</text>
-                <wd-icon name="arrow-right" size="24prx" color="#A6A7A8"></wd-icon>
+                <text class="text-[#A6A7A8] text-[24prx]">
+                  项目详情
+                </text>
+                <wd-icon name="arrow-right" size="24prx" color="#A6A7A8" />
               </view>
             </view>
             <view>
-              <text class="text-[#A6A7A8] text-[24rpx] line-through mr-[10rpx]">原价¥699</text>
+              <text class="mr-[10rpx] text-[24rpx] text-[#A6A7A8] line-through">
+                原价¥699
+              </text>
 
-              <text class="text-[#002C4F] text-[24rpx]">全程帮拍</text>
+              <text class="text-[24rpx] text-[#002C4F]">
+                全程帮拍
+              </text>
             </view>
-            <view class="text-[#002C4F] text-[24rpx]">当前已选 陪玩陪拍</view>
+            <view class="text-[24rpx] text-[#002C4F]">
+              当前已选 陪玩陪拍
+            </view>
           </view>
         </view>
         <view class="flex flex-col p-[30rpx]">
-          <view class="text-[#333333] text-[28rpx] font-bold">服务项目</view>
+          <view class="text-[28rpx] text-[#333333] font-bold">
+            服务项目
+          </view>
           <wd-radio-group v-model="value" cell shape="button">
-            <wd-radio :value="1">沃特</wd-radio>
-            <wd-radio :value="2">商家后台</wd-radio>
-            <wd-radio :value="3">沃特</wd-radio>
-            <wd-radio :value="4">商家后台</wd-radio>
+            <wd-radio :value="1">
+              沃特
+            </wd-radio>
+            <wd-radio :value="2">
+              商家后台
+            </wd-radio>
+            <wd-radio :value="3">
+              沃特
+            </wd-radio>
+            <wd-radio :value="4">
+              商家后台
+            </wd-radio>
           </wd-radio-group>
-          <view class="flex items-center justify-between mt-[30rpx]">
-            <text class="text-[#333333] text-[28rpx] font-bold">购买数量</text>
+          <view class="mt-[30rpx] flex items-center justify-between">
+            <text class="text-[28rpx] text-[#333333] font-bold">
+              购买数量
+            </text>
             <wd-input-number />
           </view>
-          <view class="flex items-center  justify-end mt-[42rpx]">
+          <view class="mt-[42rpx] flex items-center justify-end">
             <view class="flex items-end">
-              <text class="text-[#ABAEB2] text-[28rpx]">合计：</text>
-              <text class="text-[#FF0011] text-[44rpx] text-price">499</text>
+              <text class="text-[28rpx] text-[#ABAEB2]">
+                合计：
+              </text>
+              <text class="text-price text-[44rpx] text-[#FF0011]">
+                499
+              </text>
             </view>
             <view
-              class="text-[#FFFFFF] text-[28rpx] w-[254rpx] h-[80rpx] leading-[80rpx] text-center rounded-full ml-[20rpx]"
-              style="background: linear-gradient( 87deg, #0788F3 0%, #0769EB 100%);">确认下单</view>
+              class="ml-[20rpx] h-[80rpx] w-[254rpx] rounded-full text-center text-[28rpx] text-[#FFFFFF] leading-[80rpx]"
+              style="background: linear-gradient( 87deg, #0788F3 0%, #0769EB 100%);"
+            >
+              确认下单
+            </view>
           </view>
         </view>
       </view>
@@ -388,11 +476,18 @@ function onPlace(travel) {
 <style lang="scss" scoped>
 :deep(.wd-radio-group) {
   padding: 0 !important;
-
 }
 
 :deep(.wd-radio.is-button.is-checked .wd-radio__label) {
-  background: #BDE2FF;
+  background: #bde2ff;
+}
+
+.bg-009 {
+  width: 257.78rpx;
+  height: 40rpx;
+  background-image: url('/static/images/bg-009.png');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 
 .demo {
