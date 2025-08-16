@@ -43,7 +43,32 @@
         ]
       },
       "ios": {},
-      "sdkConfigs": {},
+      "sdkConfigs": {
+        "maps": {
+          "amap": {
+            "name": "amap_15876289266BSuyJ0Nmw",
+            "appkey_ios": "99ba89b02abfbbc6652e0511cc264d0a",
+            "appkey_android": "aedc6ebbf65138689f5abe11939c00a8"
+          }
+        },
+        "geolocation": {
+          "system": {
+            "__platform__": [
+              "ios",
+              "android"
+            ]
+          },
+          "amap": {
+            "name": "amap_15876289266BSuyJ0Nmw",
+            "__platform__": [
+              "ios",
+              "android"
+            ],
+            "appkey_ios": "99ba89b02abfbbc6652e0511cc264d0a",
+            "appkey_android": "aedc6ebbf65138689f5abe11939c00a8"
+          }
+        }
+      },
       "icons": {}
     },
     "compatible": {

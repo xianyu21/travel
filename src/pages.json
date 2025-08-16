@@ -280,6 +280,22 @@
           }
         },
         {
+          "path": "coupon_available",
+          "type": "page",
+          "layout": "default",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "entry_information copy",
+          "type": "page",
+          "layout": "default",
+          "style": {
+            "navigationBarTitleText": "旅接入驻"
+          }
+        },
+        {
           "path": "entry_information",
           "type": "page",
           "layout": "default",
