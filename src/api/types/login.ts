@@ -3,9 +3,11 @@
  */
 export interface IUserInfoVo {
   id: number
-  username: string
-  avatar: string
+  realName: string
+  headUrl: string
   token: string
+  balance: any
+  userId: any
 }
 
 /**

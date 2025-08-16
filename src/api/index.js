@@ -42,7 +42,50 @@ export function getMyDefaltAddr(data) {
 export function getSetDefault(data) {
   return http.post('/addr/setDefault', data)
 }
+// 系统通知列表
+export function getSystemMsgPage(data) {
+  return http.post('/notice/mySystemNotice', data)
+}
+// 订单服务通知列表
+export function getOrderMsgPage(data) {
+  return http.post('/notice/myOrderNotice', data)
+}
+// 更改通知为已读 跳转列表或者详情前调用
+export function getReadSystemNotice(data) {
+  return http.post('/notice/readSystemNotice', data)
+}
+export function getReadOrderNotice(data) {
+  return http.post('/notice/readOrderNotice', data)
+}
+// 一键已读
+export function getReadAllSystemNotice() {
+  return http.post('/notice/readAllSystemNotice')
+}
+export function getReadAllOrderNotice() {
+  return http.post('/notice/readAllOrderNotice')
+}
+// 佣金明细
+export function getBalanceDetails() {
+  return http.post('/currentUser/balanceDetails')
+}
+// 提现申请
+export function getDrawApply(data) {
+  return http.post('/currentUser/drawApply', data)
+}
+// 编辑资料
+export function updateBaseInfo(data) {
+  return http.post('/currentUser/updateBaseInfo', data)
+}
+// 完善入驻资料
+export function updateEnterInfo(data) {
+  return http.post('/receiveUser/updateBaseInfo', data)
+}
+
 // 独有
+// 订单列表
+export function getOrderList(data) {
+  return http.post('/orderl/myOrder', data)
+}
 // 攻略列表
 export function getStrategyPage(data) {
   return http.post('/strategy/page', data)
@@ -106,4 +149,12 @@ export function getServicePlace(data) {
 // 服务列表 明细
 export function getServiceDetail(data) {
   return http.post('/service/detail', data)
+}
+// 发布需求
+export function getTravelPunishOrder(data) {
+  return http.post('/travel/punishOrder', data)
+}
+// 发布价格
+export function getTravelTrade(data) {
+  return http.post('/travel/trade', data)
 }
