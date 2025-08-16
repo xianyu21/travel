@@ -13,11 +13,24 @@ import { toast } from '@/utils/toast'
 // 初始化状态
 const userInfoState: IUserInfoVo = {
   id: 0,
-  username: '',
-  avatar: '/static/images/default-avatar.png',
+  realName: '',
+  headUrl: '/static/images/default-avatar.png',
   token: '',
+  balance: 0,
+  userId: '',
 }
-
+// ,
+const locationInfoState = {
+  longitude: '106.36938845801483',
+  latitude: '29.620200872914182',
+  address: '重庆重庆市沙坪坝区微电园金科天宸',
+  province: '重庆',
+  provinceId: '500000',
+  city: '重庆市',
+  cityId: '500100',
+  county: '沙坪坝区',
+  countyId: '500106',
+}
 export const useUserStore = defineStore(
   'user',
   () => {
@@ -27,17 +40,17 @@ export const useUserStore = defineStore(
     const setUserInfo = (val: IUserInfoVo) => {
       console.log('设置用户信息', val)
       // 若头像为空 则使用默认头像
-      if (!val.avatar) {
-        val.avatar = userInfoState.avatar
+      if (!val.headUrl) {
+        val.headUrl = userInfoState.headUrl
       }
-      else {
-        val.avatar = 'https://oss.laf.run/ukw0y1-site/avatar.jpg?feige'
-      }
+      // else {
+      //   val.headUrl = 'https://oss.laf.run/ukw0y1-site/headUrl.jpg?feige'
+      // }
       userInfo.value = val
     }
-    const setUserAvatar = (avatar: string) => {
-      userInfo.value.avatar = avatar
-      console.log('设置用户头像', avatar)
+    const setUserheadUrl = (headUrl: string) => {
+      userInfo.value.headUrl = headUrl
+      console.log('设置用户头像', headUrl)
       console.log('userInfo', userInfo.value)
     }
     // 删除用户信息
@@ -51,6 +64,9 @@ export const useUserStore = defineStore(
      */
     const getUserInfo = async () => {
       const res = await _getUserInfo()
+      console.log('------------------------------')
+      console.log(res)
+      console.log('------------------------------')
       const userInfo = res.data
       setUserInfo(userInfo)
       uni.setStorageSync('userInfo', userInfo)
@@ -94,6 +110,34 @@ export const useUserStore = defineStore(
       await getUserInfo()
       return res
     }
+    const updatedUserInfo = (val) => {
+      Object.assign(userInfo.value, val)
+    }
+    const isLogined = computed(() => !!userInfo.value.token)
+    // 地理信息
+    const locationInfo = ref({ ...locationInfoState })
+    // 更新地理信息
+    const updateLocationInfo = (val) => {
+      locationInfo.value = val
+    }
+    //
+    const getLocation = () => {
+      return new Promise((resolve, reject) => {
+        uni.getLocation({
+          type: 'wgs84',
+          success: (res) => {
+            resolve(res)
+          },
+          fail: (error) => {
+            reject(error)
+          },
+        })
+      })
+    }
+    const setLocationInfo = async () => {
+      const res = await getLocation()
+      locationInfo.value = res.data
+    }
 
     return {
       userInfo,
@@ -101,8 +145,13 @@ export const useUserStore = defineStore(
       wxLogin,
       getUserInfo,
       setUserInfo,
-      setUserAvatar,
+      setUserheadUrl,
       logout,
+      isLogined,
+      updatedUserInfo,
+      locationInfo,
+      updateLocationInfo,
+      setLocationInfo,
     }
   },
   {
