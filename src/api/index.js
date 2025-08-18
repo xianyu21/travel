@@ -80,11 +80,42 @@ export function updateBaseInfo(data) {
 export function updateEnterInfo(data) {
   return http.post('/receiveUser/updateBaseInfo', data)
 }
-
+// 统计 /index/statis
+export function getStatis() {
+  return http.post('/index/statis')
+}
 // 独有
 // 订单列表
 export function getOrderList(data) {
-  return http.post('/orderl/myOrder', data)
+  return http.post('/order/myOrder', data)
+}
+// 订单详情
+export function getOrderDetail(data) {
+  return http.post('/order/orderDetail', data)
+}
+// 订单退款 travel/refund
+export function getTravelRefund(data) {
+  return http.post('/travel/refund', data)
+}
+// 订单申请人列表 travel/applyList
+export function getTravelApplyList(data) {
+  return http.post('/travel/applyList', data)
+}
+// 订单申请同意 travel/agreeApply
+export function getTravelAgreeApply(data) {
+  return http.post('/travel/agreeApply', data)
+}
+// 已完成 travel/complete
+export function getComplete(data) {
+  return http.post('/travel/complete', data)
+}
+// 投诉 /order/complaint
+export function getComplaint(data) {
+  return http.post('/order/complaint', data)
+}
+// 评价 /order/evaluate
+export function getEvaluate(data) {
+  return http.post('/order/evaluate', data)
 }
 // 攻略列表
 export function getStrategyPage(data) {
@@ -144,17 +175,21 @@ export function getServiceList() {
 }
 // 服务列表 对应人
 export function getServicePlace(data) {
-  return http.post('/travel/userServiceList', data)
+  return http.post('/service/userServiceList', data)
 }
 // 服务列表 明细
 export function getServiceDetail(data) {
   return http.post('/service/detail', data)
 }
-// 发布需求
+// 需求提交
 export function getTravelPunishOrder(data) {
   return http.post('/travel/punishOrder', data)
 }
-// 发布价格
+// 下单提交
+export function getTravelOrder(data) {
+  return http.post('/travel/order', data)
+}
+// 获取价格
 export function getTravelTrade(data) {
   return http.post('/travel/trade', data)
 }

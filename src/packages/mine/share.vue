@@ -9,7 +9,7 @@
 
 <script lang="ts" setup>
 import { useMessage, useToast } from 'wot-design-uni'
-import { getBalanceDetails } from '@/api/index'
+import { getBalanceDetails, getStatis } from '@/api/index'
 import { useUserStore } from '@/store'
 import { back, go, reloadUrl } from '@/utils/tools'
 
@@ -69,11 +69,18 @@ function changeTimeFilter() {
   // 这里可以实现时间筛选的下拉选择
   message.alert('时间筛选功能')
 }
+const info = ref({})
 onLoad(() => {
   getBalanceDetails().then((res) => {
     console.log('------------------------------')
     console.log(res)
     console.log('------------------------------')
+  })
+  getStatis().then((res) => {
+    console.log('------------------------------')
+    console.log(res)
+    console.log('------------------------------')
+    info.value = res.data
   })
 })
 </script>
@@ -102,14 +109,14 @@ onLoad(() => {
             可提现（元）
           </view>
           <view class="mb-[20rpx] text-[60rpx] text-white font-bold">
-            {{ earningsData.totalEarnings.toFixed(2) }}
+            0
           </view>
           <view class="flex items-center text-[24rpx] text-white opacity-80">
             <text class="mr-[40rpx]">
-              今日收益 {{ earningsData.todayEarnings.toFixed(2) }}
+              今日收益 {{ info.todayShareCommission .toFixed(2) }}
             </text>
             <text>
-              累计收益 {{ earningsData.cumulativeEarnings.toFixed(2) }}
+              累计收益 {{ info.totalShareCommisstion.toFixed(2) }}
             </text>
           </view>
         </view>

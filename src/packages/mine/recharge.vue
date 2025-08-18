@@ -1,9 +1,9 @@
 <route lang="jsonc" type="page">
 {
-  "layout": "default",
-  "style": {
-    "navigationBarTitleText": "申请提现"
-  }
+    "layout": "default",
+    "style": {
+        "navigationBarTitleText": "申请提现"
+    }
 }
 </route>
 
@@ -31,9 +31,9 @@ const withdrawalData = ref({
 
 // 提现规则
 const withdrawalRules = [
-  '提现存在10%的手续费，需用户自己承担',
-  '因银行政策，每次最高可提现10000.00',
-  '提现申请成功后，工作人员将在2-5个工作日审核打款，请耐心等待',
+  '关于充值的一些说明关于充值的一些说明关于充值的一些说明',
+  '关于充值的一些说明关于充值的一些说明关于充值的一些说明',
+  '关于充值的一些说明关于充值的一些说明关于充值的一些说明',
 ]
 
 // 输入金额
@@ -61,54 +61,55 @@ function selectBankCard() {
 
 // 提交申请
 async function submitWithdrawal() {
+  toast.success('待开发')
   // 表单验证
-  if (!withdrawalData.value.amount) {
-    toast.error('请输入提现金额')
-    return
-  }
+  //   if (!withdrawalData.value.amount) {
+  //     toast.error('请输入提现金额')
+  //     return
+  //   }
 
-  const amount = Number.parseFloat(withdrawalData.value.amount)
+  //   const amount = Number.parseFloat(withdrawalData.value.amount)
 
-  if (amount < 100) {
-    return toast.error('最低提现金额为¥100.00')
-  }
+  //   if (amount < 100) {
+  //     return toast.error('最低提现金额为¥100.00')
+  //   }
 
-  if (amount > 10000) {
-    return toast.error('单次最高提现金额为¥10000.00')
-  }
-  const ret = await message.confirm(
-    `确认提现¥${amount.toFixed(2)}吗？`,
-  )
-  if (ret.action == 'confirm') {
-    const res = await getDrawApply({
-      amount,
-      payType: withdrawalData.value.payType,
-    })
-    toast.success('提现申请已提交，请等待审核')
-    setTimeout(() => {
-      back()
-    }, 1500)
-  }
-  console.log('------------------------------')
-  console.log(ret)
-  console.log('------------------------------')
+//   if (amount > 10000) {
+//     return toast.error('单次最高提现金额为¥10000.00')
+//   }
+//   const ret = await message.confirm(
+//     `确认提现¥${amount.toFixed(2)}吗？`,
+//   )
+//   if (ret.action == 'confirm') {
+//     const res = await getDrawApply({
+//       amount,
+//       payType: withdrawalData.value.payType,
+//     })
+//     toast.success('提现申请已提交，请等待审核')
+//     setTimeout(() => {
+//       back()
+//     }, 1500)
+//   }
 }
 </script>
 
 <template>
   <view class="min-h-screen bg-[#f5f5f5] pb-[200rpx]">
     <wd-navbar
-      title="我的余额" custom-style="background-color: transparent !important;" left-arrow :placeholder="true"
+      title="充值" custom-style="background-color: transparent !important;" left-arrow :placeholder="true"
       :fixed="false" :bordered="false" :safe-area-inset-top="true" @click-left="back"
     />
 
     <!-- 余额卡片 -->
-    <view class="mx-[30rpx] mt-[30rpx] rounded-[20rpx] from-[#4facfe] to-[#00f2fe] bg-gradient-to-r p-[40rpx]">
+    <view
+      class="mx-[30rpx] mt-[30rpx] rounded-[20rpx] p-[40rpx]"
+      style="background: linear-gradient( 118deg, #FD8124 0%, #FEB536 100%);"
+    >
       <view class="mb-[10rpx] text-[28rpx] text-white opacity-90">
-        可提现（元）
+        当前账户余额（元）
       </view>
       <view class="text-[80rpx] text-white font-bold">
-        {{ balanceData.availableBalance.toFixed(2) }}
+        0
       </view>
     </view>
     <!-- 提现金额输入 -->
@@ -121,12 +122,22 @@ async function submitWithdrawal() {
           ¥
         </text>
         <input
-          v-model="withdrawalData.amount" type="digit" placeholder="0.00" class="flex-1 text-[60rpx] text-[#333]"
-          @input="onAmountInput"
+          v-model="withdrawalData.amount" type="digit" placeholder="0.00"
+          class="flex-1 text-[60rpx] text-[#333]" @input="onAmountInput"
         >
       </view>
       <view class="mt-[20rpx] text-[24rpx] text-[#356BFE]">
-        需达到¥100.00及以上可申请提现
+        至少¥1.00元起充值
+      </view>
+    </view>
+    <view class="grid grid-cols-3 mx-[30rpx] mt-[30rpx] gap-4">
+      <view v-for="(item, index) in 7" :key="index" class="flex flex-col items-center justify-center rounded-[12rpx] bg-[#fff] py-[25rpx]">
+        <text class="text-price text-[54rpx] text-[#000000] font-bold">
+          500
+        </text>
+        <text class="text-[22rpx] text-[#717171]">
+          送100元
+        </text>
       </view>
     </view>
     <!--  -->
@@ -134,9 +145,8 @@ async function submitWithdrawal() {
     <!-- 提现须知 -->
     <view class="mx-[30rpx] mt-[30rpx] rounded-[20rpx] p-[30rpx]">
       <view class="mb-[20rpx] text-[30rpx] text-[#666666] font-medium">
-        提现须知
+        充值说明
       </view>
-
       <view class="space-y-[15rpx]">
         <view v-for="(rule, index) in withdrawalRules" :key="index" class="flex items-start">
           <text class="mr-[10rpx] text-[28rpx] text-[#999999]">
@@ -155,7 +165,7 @@ async function submitWithdrawal() {
         class="h-[90rpx] flex items-center justify-center rounded-[45rpx] text-[32rpx] text-white"
         style="background: linear-gradient(106deg, #078af3 0%, #0668eb 100%);" @click="submitWithdrawal"
       >
-        提交申请
+        确认充值
       </view>
     </view>
   </view>

@@ -8,14 +8,38 @@ export type CustomRequestOptions = UniApp.RequestOptions & {
   /** 出错时是否隐藏错误提示 */
   hideErrorToast?: boolean
 } & IUniUploadFileOptions // 添加uni.uploadFile参数类型
+
+// 黑名单接口列表，这些接口不需要显示错误提示
+const blacklistApis = [
+  '/api/user/check',
+  '/api/common/heartbeat',
+  '/travel/receiveUserPage',
+  '/spot/page',
+  '/service/detail',
+]
+
+/**
+ * 判断接口是否在黑名单中
+ * @param url 接口地址
+ * @returns 是否在黑名单中
+ */
+export function isInBlacklist(url: string): boolean {
+  const apiPath = url.split('?')[0]
+  return blacklistApis.some(api => apiPath.includes(api))
+}
 const baseUrl = getEnvBaseUrl()
 const httpInterceptor = {
   invoke(options: CustomRequestOptions) {
     const userStore = useUserStore()
-    // if (options.data) {
-    //   options.data.provinceId = userStore.locationInfo.provinceId
-    //   options.data.cityId = userStore.locationInfo.cityId
-    // }
+    // 判断是否在黑名单中
+    const inBlacklist = isInBlacklist(options.url)
+    if (inBlacklist) {
+      if (options.data) {
+        options.data.provinceId = userStore.locationInfo.provinceId
+        options.data.cityId = userStore.locationInfo.cityId
+      }
+    }
+
     if (options.query) {
       const queryStr = stringifyQuery(options.query)
       if (options.url.includes('?')) {

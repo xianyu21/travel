@@ -244,7 +244,7 @@
           "type": "page",
           "layout": "default",
           "style": {
-            "navigationBarTitleText": "我的余额"
+            "navigationBarTitleText": "申请提现"
           }
         },
         {
@@ -312,6 +312,14 @@
           }
         },
         {
+          "path": "recharge",
+          "type": "page",
+          "layout": "default",
+          "style": {
+            "navigationBarTitleText": "申请提现"
+          }
+        },
+        {
           "path": "setting",
           "type": "page",
           "layout": "default",
@@ -353,7 +361,7 @@
           "type": "page",
           "layout": "default",
           "style": {
-            "navigationBarTitleText": ""
+            "navigationBarTitleText": "确认下单"
           }
         },
         {
@@ -366,6 +374,22 @@
         },
         {
           "path": "evaluate",
+          "type": "page",
+          "layout": "default",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "index",
+          "type": "page",
+          "layout": "default",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "place",
           "type": "page",
           "layout": "default",
           "style": {

@@ -322,6 +322,13 @@ export function copy(value) {
 }
 //
 export function call(value) {
+  if (!value) {
+    uni.showToast({
+      title: '手机号错误',
+      icon: 'none',
+    })
+    return false
+  }
   uni.makePhoneCall({
     phoneNumber: value,
   })

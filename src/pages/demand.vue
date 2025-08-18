@@ -35,6 +35,7 @@ const formData = ref({
   gender: '',
   hasCar: '', // 是否带车
   payType: '', // 支付方式 1微信  2支付宝
+  orderType: 2,
 })
 const payInfo = ref({
   estimateFare: '',
@@ -208,6 +209,10 @@ onLoad(async () => {
     formData.value.couponRecordId = data.couponRecordId
     calc()
   })
+})
+onUnload(() => {
+  uni.$off('updataAddress')
+  uni.$off('updataCoupon')
 })
 </script>
 

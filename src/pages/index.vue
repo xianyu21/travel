@@ -9,14 +9,14 @@
 </route>
 
 <script lang="ts" setup>
-import { getByType, getServicePlace, getSpotPage, getTravelList } from '@/api/index'
+import { getByType, getServiceDetail, getServicePlace, getSpotPage, getTravelList } from '@/api/index'
+import { useUserStore } from '@/store'
 import { go } from '@/utils/tools'
 
 defineOptions({
   name: 'Home',
 })
-
-// 获取屏幕边界到安全区域距离
+const userStore = useUserStore()
 const safeAreaInsets = ref<UniApp.SafeAreaInsets | null>(null)
 
 onLoad(() => {
@@ -151,16 +151,34 @@ onLoad(async () => {
   console.log(ret)
   console.log('------------------------------')
 })
-function onPlace(travel) {
+async function onPlace(travel) {
   console.log('------------------------------')
   console.log(travel)
   console.log('------------------------------')
-  getServicePlace({
+  const res = await getServicePlace({
     receiveUserId: travel.receiveUserId,
-  }).then((res) => {
-    console.log('------------------------------')
-    console.log(res)
-    console.log('------------------------------')
+  })
+  console.log('------------------------------')
+  console.log(res)
+  console.log('------------------------------')
+  const ret = await getServiceDetail({
+    serviceId: res.data[0].serviceId,
+  })
+  show.value = true
+}
+function onNext(e) {
+  console.log('------------------------------')
+  console.log(e)
+  console.log('------------------------------')
+  show.value = false
+  go('/packages/order/confirm', {
+    durationId: '95c93b156dc14c0e9efb34398c8e476c',
+    serviceCount: 1,
+    serviceId: '031ef90569314394b604ef5b367bbffa',
+    serviceName: '陪玩陪拍',
+    receiveUserId: '613f35c0a34e4da6aceab895611aac83',
+    receiveUserName: '夜未央',
+    hours: 4,
   })
 }
 </script>
@@ -169,9 +187,11 @@ function onPlace(travel) {
   <view class="home-container bg-[#FAFAFA]" :style="{ paddingTop: `${safeAreaInsets?.top || 0}px` }">
     <!-- 顶部导航栏 -->
     <view class="top-bar">
-      <view class="location">
-        <text class="i-carbon-location mr-1 text-xl" />
-        <text>重庆</text>
+      <view class="location felx items-center gap-[12rpx]">
+        <image src="@img/img-030.png" mode="scaleToFill" class="h-[29.36rpx] w-[26.42rpx]" />
+        <text class="text-[28rpx] text-[#333333]">
+          重庆
+        </text>
       </view>
       <view class="search-input" @click="navigateToSearch">
         <text class="i-carbon-search mr-1 text-lg" />
@@ -463,6 +483,7 @@ function onPlace(travel) {
             <view
               class="ml-[20rpx] h-[80rpx] w-[254rpx] rounded-full text-center text-[28rpx] text-[#FFFFFF] leading-[80rpx]"
               style="background: linear-gradient( 87deg, #0788F3 0%, #0769EB 100%);"
+              @click="onNext"
             >
               确认下单
             </view>

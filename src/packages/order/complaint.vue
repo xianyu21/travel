@@ -7,17 +7,36 @@
 }
 </route>
 
-<script lang="ts" setup>
+<script setup>
 import { useMessage, useToast } from 'wot-design-uni'
-// import {  } from '@/api/index'
+import { getComplaint } from '@/api/index'
 import { useUserStore } from '@/store'
 import { back, go, reloadUrl } from '@/utils/tools'
 
 const toast = useToast()
 const message = useMessage()
 const userStore = useUserStore()
-const value = ref<string>('')
-const value1 = ref<string>(3)
+const orderNo = ref('')
+const content = ref('')
+onLoad((options) => {
+  console.log('------------------------------')
+  console.log(options)
+  console.log('------------------------------')
+  orderNo.value = options.orderNo
+})
+function onSubmit() {
+  getComplaint({
+    orderNo: orderNo.value,
+    content: content.value,
+  }).then((res) => {
+    if (res.code === 200) {
+      toast.success('投诉成功')
+      setTimeout(() => {
+        back()
+      }, 1000)
+    }
+  })
+}
 </script>
 
 <template>
@@ -27,14 +46,14 @@ const value1 = ref<string>(3)
       @click-left="back"
     />
     <view class="mx-[30rpx] mt-[30rpx] overflow-hidden rounded-[20rpx] bg-[#fff]">
-      <wd-textarea v-model="value" placeholder="请简短描述下您的投诉内容..." />
+      <wd-textarea v-model="content" placeholder="请简短描述下您的投诉内容..." />
     </view>
     <view class="fixed bottom-[64rpx] left-0 right-0 z-1">
       <view
         class="mx-[48rpx] h-[82rpx] rounded-full text-center text-[28rpx] text-[#FFFFFF] leading-[82rpx]" :style="{
           background: 'linear-gradient( 118deg, #078BF3 0%, #0666EA 100%)',
         }"
-        @click="go('/packages/home/order_confirm')"
+        @click="onSubmit"
       >
         提交投诉
       </view>

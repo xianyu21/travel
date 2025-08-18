@@ -28,7 +28,7 @@ const paymentOptions = [
   {
     id: 3,
     name: '余额支付',
-    icon: '/static/images/img-304.png',
+    icon: '/static/images/yue.png',
     style: 'width: 36rpx; height: 36rpx;',
   },
 ]

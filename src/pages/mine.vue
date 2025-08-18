@@ -82,7 +82,7 @@ onShow(() => {
           </text>
         </view>
       </view>
-      <view class="bg-007 flex flex-1 flex-col gap-[30rpx] px-[26rpx] text-[#fff]">
+      <view class="bg-007 flex flex-1 flex-col gap-[30rpx] px-[26rpx] text-[#fff]" @click="go('/packages/mine/recharge')">
         <view class="mt-[26rpx]">
           <text class="text-[24rpx]">
             平台余额(元)
@@ -90,7 +90,7 @@ onShow(() => {
           <image src="@img/img-009.png" mode="scaleToFill" class="h-[16.12rpx] w-[25.1rpx]" />
         </view>
         <view class="flex items-center justify-between gap-[10rpx]">
-          <text class="text-[32rpx] font-bold" @click="go('/packages/mine/balance')">
+          <text class="text-[32rpx] font-bold">
             {{ userStore.userInfo.balance }}
           </text>
           <view class="h-[52rpx] w-[140rpx] rounded-full bg-[#FFFFFF] text-center text-[28rpx] text-[#798CF7] leading-[52rpx]">
@@ -123,7 +123,7 @@ onShow(() => {
         <view class="text-[32rpx] text-[#000000] font-bold">
           我的订单
         </view>
-        <view class="flex items-center">
+        <view class="flex items-center" @click="go('/packages/order/index')">
           <text class="text-[24rpx] text-[#ABAEB2]">
             全部订单
           </text>
@@ -131,31 +131,31 @@ onShow(() => {
         </view>
       </view>
       <view class="grid grid-cols-[repeat(5,auto)] mt-[30rpx] gap-[30rpx]">
-        <view class="flex flex-col items-center" @click="go('/packages/mine/share')">
+        <view class="flex flex-col items-center" @click="go('/packages/order/index')">
           <image src="@img/img-020.png" mode="scaleToFill" class="h-[48rpx] w-[46rpx]" />
           <text class="mt-[10rpx] text-[24rpx] text-[#000000]">
             已接单
           </text>
         </view>
-        <view class="flex flex-col items-center" @click="go('/packages/mine/share')">
+        <view class="flex flex-col items-center" @click="go('/packages/order/index')">
           <image src="@img/img-021.png" mode="scaleToFill" class="h-[48rpx] w-[44rpx]" />
           <text class="mt-[10rpx] text-[24rpx] text-[#000000]">
             已出发
           </text>
         </view>
-        <view class="flex flex-col items-center" @click="go('/packages/mine/bank_management')">
+        <view class="flex flex-col items-center" @click="go('/packages/order/index')">
           <image src="@img/img-022.png" mode="scaleToFill" class="h-[46rpx] w-[48rpx]" />
           <text class="mt-[10rpx] text-[24rpx] text-[#000000]">
             已到达
           </text>
         </view>
-        <view class="flex flex-col items-center" @click="go('/packages/mine/entry_information')">
+        <view class="flex flex-col items-center" @click="go('/packages/order/index')">
           <image src="@img/img-023.png" mode="scaleToFill" class="h-[48rpx] w-[44rpx]" />
           <text class="mt-[10rpx] text-[24rpx] text-[#000000]">
             开始服务
           </text>
         </view>
-        <view class="flex flex-col items-center" @click="go('/packages/mine/address')">
+        <view class="flex flex-col items-center" @click="go('/packages/order/index')">
           <image src="@img/img-024.png" mode="scaleToFill" class="h-[44rpx] w-[48rpx]" />
           <text class="mt-[10rpx] text-[24rpx] text-[#000000]">
             完成
@@ -181,12 +181,12 @@ onShow(() => {
             推广赚钱
           </text>
         </view>
-        <view class="flex flex-col items-center" @click="go('/packages/mine/bank_management')">
+        <!-- <view class="flex flex-col items-center" @click="go('/packages/mine/bank_management')">
           <image src="@img/img-011.png" mode="scaleToFill" class="h-[48rpx] w-[46rpx]" />
           <text class="mt-[10rpx] text-[24rpx] text-[#000000]">
             银行卡管理
           </text>
-        </view>
+        </view> -->
         <view class="flex flex-col items-center" @click="go('/packages/mine/entry_information')">
           <image src="@img/img-012.png" mode="scaleToFill" class="h-[48rpx] w-[46rpx]" />
           <text class="mt-[10rpx] text-[24rpx] text-[#000000]">
