@@ -9,7 +9,7 @@
 
 <script lang="ts" setup>
 import { useMessage, useToast } from 'wot-design-uni'
-import { getTraveCommentList, getTraveInfo } from '@/api/index'
+import { getCancelCollect, getCollect, getTraveCommentList, getTraveInfo } from '@/api/index'
 import { useUserStore } from '@/store'
 import { back, go, reloadUrl } from '@/utils/tools'
 

@@ -199,7 +199,7 @@ function handleConfirm() {
   border-top-left-radius: 20rpx;
   border-top-right-radius: 20rpx;
   padding: 30rpx;
-  z-index: 1000;
+  z-index: 91000;
 }
 
 .time-picker-header {

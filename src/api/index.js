@@ -76,13 +76,17 @@ export function getDrawApply(data) {
 export function updateBaseInfo(data) {
   return http.post('/currentUser/updateBaseInfo', data)
 }
-// 完善入驻资料
-export function updateEnterInfo(data) {
-  return http.post('/receiveUser/updateBaseInfo', data)
+// 完善入驻资料 /currentUser/registerReceiveUser
+export function registerReceiveUser(data) {
+  return http.post('/currentUser/registerReceiveUser', data)
 }
 // 统计 /index/statis
 export function getStatis() {
   return http.post('/index/statis')
+}
+// 续单详情 order/continueOrderDetail
+export function getContinueOrderDetail(data) {
+  return http.post('/order/continueOrderDetail', data)
 }
 // 独有
 // 订单列表
@@ -116,6 +120,26 @@ export function getComplaint(data) {
 // 评价 /order/evaluate
 export function getEvaluate(data) {
   return http.post('/order/evaluate', data)
+}
+// 续单前 获取价格 travel/continueTrade
+export function getContinueTrade(data) {
+  return http.post('/travel/continueTrade', data)
+}
+// 支付前提交续单订单 travel/continueOrder
+export function getContinueOrder(data) {
+  return http.post('/travel/continueOrder', data)
+}
+// 我收藏的旅接 receiveUser/myCollect
+export function getMyCollect(data) {
+  return http.post('/receiveUser/myCollect', data)
+}
+// 收藏旅接 receiveUser/collect
+export function getCollect(data) {
+  return http.post('/receiveUser/collect', data)
+}
+// 取消收藏 travel/cancelCollect
+export function getCancelCollect(data) {
+  return http.post('/receiveUser/cancelCollect', data)
 }
 // 攻略列表
 export function getStrategyPage(data) {
@@ -157,17 +181,16 @@ export function getCouponAvailable() {
 }
 // 旅接人 推荐列表
 export function getTravelList(data) {
-  return http.post('/travel/receiveUserPage', data)
+  return http.post('/receiveUser/page', data)
 }
-
 // 旅接人 详情
 export function getTraveInfo(data) {
-  return http.post('/travel/receiveUserDetail', data)
+  return http.post('/receiveUser/detail', data)
 }
 
 // 旅接人 评价列表
 export function getTraveCommentList(data) {
-  return http.post('/travel/receiveUserEvaluationPage', data)
+  return http.post('/receiveUser/evaluationPage', data)
 }
 // 服务列表 所有
 export function getServiceList() {
@@ -192,4 +215,8 @@ export function getTravelOrder(data) {
 // 获取价格
 export function getTravelTrade(data) {
   return http.post('/travel/trade', data)
+}
+// 客户端获取入驻信息 /currentUser/getReceiveUserInfo
+export function getReceiveUserInfo() {
+  return http.post('/currentUser/getReceiveUserInfo')
 }

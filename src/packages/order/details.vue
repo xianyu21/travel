@@ -7,16 +7,16 @@
 }
 </route>
 
-<script lang="ts" setup>
+<script setup>
+import dayjs from 'dayjs'
 import { useMessage, useToast } from 'wot-design-uni'
-import { getComplete, getOrderDetail, getTravelAgreeApply, getTravelApplyList, getTravelRefund } from '@/api/index'
+import { getComplete, getContinueOrder, getContinueOrderDetail, getContinueTrade, getOrderDetail, getServiceDetail, getTravelAgreeApply, getTravelApplyList, getTravelRefund } from '@/api/index'
 import { useUserStore } from '@/store'
 import { back, call, go, reloadUrl } from '@/utils/tools'
 
 const toast = useToast()
 const message = useMessage()
 const userStore = useUserStore()
-const active = ref<number>(2)
 const info = ref({})
 const applylist = ref([])
 const orderNo = ref()
@@ -24,15 +24,19 @@ onLoad((options) => {
   orderNo.value = decodeURIComponent(options.orderNo)
   init()
 })
-function init() {
-  getOrderDetail({
+const continuList = ref([])
+async function init() {
+  const res = await getOrderDetail({
     orderNo: orderNo.value,
-  }).then((res) => {
-    console.log('------------------------------')
-    console.log(res)
-    console.log('------------------------------')
-    info.value = res.data
   })
+  info.value = res.data
+  if (res.data.totalContinueMoney > 0) {
+    getContinueOrderDetail({
+      orderNo: orderNo.value,
+    }).then((res1) => {
+      continuList.value = res1.data
+    })
+  }
   getTravelApplyList({
     orderNo: orderNo.value,
   }).then((res) => {
@@ -47,7 +51,7 @@ const orderDetail = ref({
 // 联系客户
 function contactCustomer() {
   uni.makePhoneCall({
-    phoneNumber: orderDetail.value.user.phone,
+    phoneNumber: orderDetail.value?.user.phone,
     success: () => {
       console.log('拨打电话成功')
     },
@@ -101,6 +105,91 @@ function onComplaint() {
 }
 function onEvaluate() {
   go('/packages/order/evaluate', { orderNo: orderNo.value })
+}
+
+// 续单服务
+const show = ref(false)
+const durationList = ref([])
+const continues = ref({
+  durationId: '',
+  serviceId: '',
+  receiveUserId: '',
+  payType: 3,
+  continueTimeStart: '',
+  continueTimeEnd: '',
+  orderNo: '',
+  serviceCount: 1,
+})
+
+async function handleContinue() {
+  continues.value.serviceId = info.value.serviceId
+  continues.value.receiveUserId = info.value.receiveUserId
+  continues.value.orderNo = info.value.orderNo
+
+  const res = await getServiceDetail({
+    serviceId: info.value.serviceId,
+  })
+  if (res.code === 200) {
+    durationList.value = res.data
+    show.value = true
+  }
+}
+
+//
+const showTimePicker = ref(false)
+function handleShowTimePicker() {
+  show.value = false
+  showTimePicker.value = true
+}
+function confirmTimeSelection(timeData) {
+  console.log('------------------------------')
+  console.log(`${timeData.fullTime}` + `:00`)
+  console.log('------------------------------')
+  continues.value.continueTimeStart = `${timeData.fullTime}` + `:00`
+  showTimePicker.value = false
+  show.value = true
+  continueTimeEnd()
+}
+function onSubmit() {
+  if (!continues.value.continueTimeStart) {
+    return toast.show('请选择服务时间')
+  }
+  if (!continues.value.durationId) {
+    return toast.show('请选择服务时长')
+  }
+  const data = durationList.value.filter(el => el.durationId === continues.value.durationId)
+  const hours = data[0].hour * continues.value.serviceCount
+  continues.value.continueTimeEnd = dayjs(continues.value.continueTimeStart).add(hours, 'hour').format('YYYY-MM-DD HH:mm:ss')
+  getContinueOrder({ ...continues.value }).then((res) => {
+    if (res.code === 200) {
+      toast.show('续单成功')
+      show.value = false
+      init()
+    }
+  })
+}
+// getContinueTrade
+const cost = ref(0)
+function onContiueTrade() {
+  getContinueTrade({ ...continues.value }).then((res) => {
+    if (res.code === 200) {
+      cost.value = res.data.totalPay
+    }
+  })
+}
+function onChangeDurationId() {
+  continueTimeEnd()
+}
+function onChangeServiceCount() {
+  continueTimeEnd()
+}
+function continueTimeEnd() {
+  if (continues.value.continueTimeStart && continues.value.durationId) {
+    const data = durationList.value.filter(el => el.durationId === continues.value.durationId)
+    const hours = data[0].hour * continues.value.serviceCount
+    continues.value.continueTimeEnd = dayjs(continues.value.continueTimeStart).add(hours, 'hour').format('YYYY-MM-DD HH:mm:ss')
+    onContiueTrade()
+  }
 }
 </script>
 
@@ -179,12 +268,12 @@ function onEvaluate() {
     </view>
     <view class="bg-[#FAFAFA] pb-[100rpx] pt-[30rpx]" style="border-radius: 20rpx 20rpx 0rpx 0rpx;">
       <!--  -->
-      <view v-if="info.status === 4" class="mx-[30rpx] rounded-[20rpx] bg-white p-[30rpx]">
+      <view v-if="info.status === 3" class="mx-[30rpx] rounded-[20rpx] bg-white p-[30rpx]">
         <view class="mb-[30rpx] text-[32rpx] text-[#000000] font-bold">
           当前接单旅接
         </view>
-        <view>
-          <view v-for="(item,index) in applylist" :key="index" class="flex items-center justify-between">
+        <view class="flex flex-col gap-[40rpx]">
+          <view v-for="(item, index) in applylist" :key="index" class="flex items-center justify-between">
             <view class="flex items-center gap-[20rpx]">
               <image :src="item.headUrl" mode="scaleToFill" class="h-[40rpx] w-[40rpx] rounded-full" />
               <text class="text-[28rpx] text-[#717171]">
@@ -207,27 +296,27 @@ function onEvaluate() {
           </view>
           <wd-steps align-center>
             <wd-step
-              v-if="info.orderType === 2" title="待接单" description="step"
+              v-if="info.orderType === 2" title="待接单" :description="info?.createTime"
               :status="info.status === 3 ? 'process' : (info.status > 3 ? 'finished' : '')"
             />
             <wd-step
-              title="已接单" description="step"
+              title="已接单" :description="info?.receiveTime"
               :status="info.status === 4 ? 'process' : (info.status > 4 ? 'finished' : '')"
             />
             <wd-step
-              title="已出发" description="step"
+              title="已出发" :description="info?.setOutTime"
               :status="info.status === 5 ? 'process' : (info.status > 5 ? 'finished' : '')"
             />
             <wd-step
-              title="已到达" description="step"
+              title="已到达" :description="info?.arriveTime"
               :status="info.status === 6 ? 'process' : (info.status > 6 ? 'finished' : '')"
             />
             <wd-step
-              title="服务中" description="step"
+              title="服务中" :description="info?.startServiceTime"
               :status="info.status === 7 ? 'process' : (info.status > 7 ? 'finished' : '')"
             />
             <wd-step
-              title="完成" description="step"
+              title="完成" :description="info?.completeTime"
               :status="info.status === 8 ? 'process' : (info.status > 8 ? 'finished' : '')"
             />
           </wd-steps>
@@ -279,42 +368,32 @@ function onEvaluate() {
           <view class="mb-[30rpx] text-[32rpx] text-[#000000] font-bold">
             续单服务
           </view>
-
-          <view class="space-y-[20rpx]">
-            <view class="flex items-center justify-between">
-              <text class="text-[28rpx] text-[#6B6B6D]">
-                续单开始时间
-              </text>
-              <text class="text-[28rpx] text-[#333]">
-                {{ info.serviceTimeStart }}
-              </text>
-            </view>
-
-            <view class="flex items-center justify-between">
-              <text class="text-[28rpx] text-[#6B6B6D]">
-                续单结束时间
-              </text>
-              <text class="text-[28rpx] text-[#333]">
-                {{ info.serviceTimeEnd }}
-              </text>
-            </view>
-
-            <view class="flex items-center justify-between">
-              <text class="text-[28rpx] text-[#6B6B6D]">
-                续单实付金额
-              </text>
-              <text class="text-[32rpx] text-[#3686EF] font-medium">
-                ¥{{ info.renewal.totalAmount.toFixed(2) }}
-              </text>
-            </view>
-
-            <view class="flex items-center justify-between">
-              <text class="text-[28rpx] text-[#6B6B6D]">
-                预估收入
-              </text>
-              <text class="text-[32rpx] text-[#3686EF] font-medium">
-                ¥{{ info.renewal.estimatedIncome.toFixed(2) }}
-              </text>
+          <view class="flex flex-col gap-[20rpx]">
+            <view v-for="item in continuList" :key="item.id">
+              <view class="flex items-center justify-between">
+                <text class="text-[28rpx] text-[#6B6B6D]">
+                  续单开始时间
+                </text>
+                <text class="text-[28rpx] text-[#333]">
+                  {{ item.continueTimeStart }}
+                </text>
+              </view>
+              <view class="flex items-center justify-between">
+                <text class="text-[28rpx] text-[#6B6B6D]">
+                  续单结束时间
+                </text>
+                <text class="text-[28rpx] text-[#333]">
+                  {{ item.continueTimeEnd }}
+                </text>
+              </view>
+              <view class="flex items-center justify-between">
+                <text class="text-[28rpx] text-[#6B6B6D]">
+                  续单实付金额
+                </text>
+                <text class="text-[32rpx] text-[#3686EF] font-medium">
+                  ¥{{ item.originalMoney.toFixed(2) }}
+                </text>
+              </view>
             </view>
           </view>
         </view>
@@ -373,7 +452,7 @@ function onEvaluate() {
           <view
             v-if="[7].includes(info?.status)"
             class="h-[56rpx] w-[144rpx] flex items-center justify-center rounded-[45rpx] text-[28rpx] text-white leading-[56rpx]"
-            style="background: linear-gradient( 90deg, #FD8A27 0%, #FEB536 100%);" @click="completeService"
+            style="background: linear-gradient( 90deg, #FD8A27 0%, #FEB536 100%);" @click="handleContinue"
           >
             续单服务
           </view>
@@ -384,8 +463,8 @@ function onEvaluate() {
           >
             服务完成
           </view>
-          <!-- v-if="[8].includes(info?.status)" -->
           <view
+            v-if="[8].includes(info?.status)"
             class="h-[56rpx] w-[140rpx] rounded-[198rpx] text-center text-[28rpx] text-[#333333] leading-[56rpx]"
             style="border: 1rpx solid #A6A7A8;" @click="onComplaint"
           >
@@ -398,14 +477,78 @@ function onEvaluate() {
           >
             再来一单
           </view>
-          <!-- v-if="[8].includes(info?.status)" -->
           <view
+            v-if="[8].includes(info?.status)"
             class="h-[56rpx] w-[144rpx] flex items-center justify-center rounded-[45rpx] text-[28rpx] text-white leading-[56rpx]"
             style="background: linear-gradient( 106deg, #078AF3 0%, #0668EB 100%);" @click="onEvaluate"
           >
             立即评价
           </view>
         </view>
+        <!--  -->
+        <wd-popup
+          v-model="show" position="bottom" closable
+          custom-style="border-radius:32rpx 32rpx 0 0;background: linear-gradient( 180deg, #F8F8F8 0%, #EAF6FF 100%);"
+          :z-index="99999" :safe-area-inset-bottom="true" @close="show = false"
+        >
+          <view class="px-[40rpx] pt-[40rpx] text-[32rpx] text-[#000000] font-bold">
+            续单服务
+          </view>
+          <view class="mx-[30rpx] mt-[30rpx] rounded-[20rpx] bg-[#fff] p-[30rpx]">
+            <view class="flex items-center justify-between" @click="handleShowTimePicker">
+              <text class="text-[28rpx] text-[#000000] font-bold">
+                续单开始时间
+              </text>
+              <view class="flex items-center">
+                <text class="text-[28rpx] text-[#000000]">
+                  {{ continues.continueTimeStart }}
+                </text>
+                <wd-icon name="chevron-right" size="28rpx" color="#717171" />
+              </view>
+            </view>
+          </view>
+          <view class="mx-[30rpx] mt-[30rpx] rounded-[12rpx] bg-[#fff]">
+            <view class="flex flex-col p-[30rpx]">
+              <view class="text-[28rpx] text-[#333333] font-bold">
+                续单时长
+              </view>
+              <wd-radio-group v-model="continues.durationId" cell shape="button" @change="onChangeDurationId">
+                <wd-radio v-for="item in durationList" :key="item.id" :value="item.durationId">
+                  {{ item.hour }}小时
+                </wd-radio>
+              </wd-radio-group>
+            </view>
+          </view>
+          <view class="mx-[30rpx] bg-[#fff] p-[30rpx]">
+            <view class="flex items-center justify-between">
+              <text class="text-[28rpx] text-[#000000] font-bold">
+                购买数量
+              </text>
+              <wd-input-number v-model="continues.serviceCount" @change="onChangeServiceCount" />
+            </view>
+          </view>
+          <view class="mx-[30rpx] overflow-hidden bg-[#fff]">
+            <ol-paymentPicker v-model="continues.payType" />
+          </view>
+          <view class="mx-[30rpx] mb-[30rpx] flex items-center justify-end bg-[#fff] px-[30rpx] pb-[30rpx]">
+            <view class="flex items-end">
+              <text class="text-[28rpx] text-[#ABAEB2]">
+                合计：
+              </text>
+              <text class="text-price text-[44rpx] text-[#FF0011]">
+                {{ cost }}
+              </text>
+            </view>
+            <view
+              class="ml-[20rpx] h-[80rpx] w-[254rpx] rounded-full text-center text-[28rpx] text-[#FFFFFF] leading-[80rpx]"
+              style="background: linear-gradient( 87deg, #0788F3 0%, #0769EB 100%);" @click="onSubmit"
+            >
+              确认下单
+            </view>
+          </view>
+        </wd-popup>
+        <!--  -->
+        <ServiceTimePicker :show="showTimePicker" @close="showTimePicker = true" @confirm="confirmTimeSelection" />
       </view>
     </view>
   </view>

@@ -317,7 +317,6 @@ onUnload(() => {
           是否带车
         </text>
         <view class="flex items-center gap-[30rpx]">
-          <!-- formData.hasCar = '是' -->
           <view class="flex items-center gap-[10rpx]" @click="hasCarChange('1')">
             <wd-icon v-if="formData.hasCar === '1'" name="check-circle-filled" size="40rpx" color="#0669EB" />
             <wd-icon v-else name="circle" size="40rpx" color="#0669EB" />

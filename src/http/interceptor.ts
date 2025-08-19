@@ -16,6 +16,7 @@ const blacklistApis = [
   '/travel/receiveUserPage',
   '/spot/page',
   '/service/detail',
+  '/receiveUser/page',
 ]
 
 /**

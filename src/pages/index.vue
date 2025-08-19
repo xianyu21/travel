@@ -106,38 +106,48 @@ function navigateToDetail(id: number) {
     icon: 'none',
   })
 }
-const spotList = ref([])
+
 const travelList = ref([])
 async function init() {
-  const res = await getTravelList({
-    page: {
-      page: 1,
-      limit: 10,
-    },
-    longitude: '',
-    latitude: '',
-    gender: '',
-    hasCar: '',
-    orderType: '',
-  })
-  console.log('------------------------------')
-  console.log(res)
-  console.log('------------------------------')
-  travelList.value = res.data.list
+  // const res = await getTravelList({
+  //   page: {
+  //     page: 1,
+  //     limit: 10,
+  //   },
+  //   longitude: '',
+  //   latitude: '',
+  //   gender: '',
+  //   hasCar: '',
+  //   orderType: '',
+  // })
+  // console.log('------------------------------')
+  // console.log(res)
+  // console.log('------------------------------')
+  // travelList.value = res.data.list
 }
 const show = ref(false)
 const value = ref(1)
 const swiperList1 = ref([])
 const swiperList2 = ref([])
+const spotHotList = ref([])
+const spotRecommendList = ref([])
 onLoad(async () => {
-  getSpotPage({
+  const res1 = await getSpotPage({
     page: {
       page: 1,
-      limit: 10,
+      limit: 4,
     },
-  }).then((res: any) => {
-    spotList.value = res.data.list
+    isHot: 1,
   })
+  spotHotList.value = res1.data.list
+  const res2 = await getSpotPage({
+    page: {
+      page: 1,
+      limit: 3,
+    },
+    isRecommend: 1,
+  })
+  spotRecommendList.value = res2.data.list
   init()
   const res = await getByType({
     adType: 1,
@@ -147,29 +157,17 @@ onLoad(async () => {
     adType: 2,
   })
   swiperList2.value = ret.data
-  console.log('------------------------------')
-  console.log(ret)
-  console.log('------------------------------')
 })
 async function onPlace(travel) {
-  console.log('------------------------------')
-  console.log(travel)
-  console.log('------------------------------')
   const res = await getServicePlace({
     receiveUserId: travel.receiveUserId,
   })
-  console.log('------------------------------')
-  console.log(res)
-  console.log('------------------------------')
   const ret = await getServiceDetail({
     serviceId: res.data[0].serviceId,
   })
   show.value = true
 }
 function onNext(e) {
-  console.log('------------------------------')
-  console.log(e)
-  console.log('------------------------------')
   show.value = false
   go('/packages/order/confirm', {
     durationId: '95c93b156dc14c0e9efb34398c8e476c',
@@ -237,15 +235,27 @@ function onNext(e) {
     <view class="mx-[30rpx] mt-[30rpx]">
       <div class="grid grid-flow-col grid-rows-3 gap-[28rpx]">
         <div
-          class="col-span-2 row-span-6 h-[352rpx] flex items-center justify-center rounded-[16rpx] bg-[#eaeaea] text-xl font-bold"
+          class="col-span-2 row-span-6 h-[352rpx] flex items-center justify-center rounded-[16rpx] text-xl font-bold"
         >
-          热门景点
+          <image
+            src=""
+            mode="scaleToFill"
+            class="h-full w-full bg-[#007aff]"
+          />
         </div>
         <div class="row-span-3 h-[162rpx] flex items-center justify-center rounded-[16rpx] bg-[#eaeaea]">
-          特色美食
+          <image
+            src=""
+            mode="scaleToFill"
+            class="h-full w-full bg-[#007aff]"
+          />
         </div>
         <div class="row-span-3 h-[162rpx] flex items-center justify-center rounded-[16rpx] bg-[#eaeaea]">
-          文化体验
+          <image
+            src=""
+            mode="scaleToFill"
+            class="h-full w-full bg-[#007aff]"
+          />
         </div>
       </div>
     </view>
@@ -268,7 +278,7 @@ function onNext(e) {
     </view>
     <view class="mx-[30rpx] mt-[30rpx]">
       <div class="grid grid-cols-2 gap-4">
-        <ol-scenic-item v-for="item in spotList" :key="item.id" :scenic-data="item" :enable-favorite="false" />
+        <ol-scenic-item v-for="item in spotHotList" :key="item.id" :scenic-data="item" :enable-favorite="false" />
       </div>
     </view>
     <view class="mx-[30rpx] mt-[30rpx] text-[32rpx] text-[#333333] font-bold">
@@ -280,7 +290,7 @@ function onNext(e) {
         <text>性别</text>
         <text>单量</text>
         <text>评分</text>
-        <text>带车</text>
+        <wd-sort-button v-model="value" title="带车" @change="handleChange" />
       </view>
       <view class="flex flex-col gap-[32rpx]">
         <view

@@ -9,7 +9,7 @@
 
 <script lang="ts" setup>
 import { useMessage, useToast } from 'wot-design-uni'
-import { updateEnterInfo } from '@/api/index'
+import { getReceiveUserInfo, registerReceiveUser } from '@/api/index'
 import { useColPickerData } from '@/hooks/useColPickerData'
 import { useUserStore } from '@/store'
 import { back, go, reloadUrl } from '@/utils/tools'
@@ -135,6 +135,11 @@ onLoad(() => {
     headUrl: userStore.userInfo.headUrl,
     realName: userStore.userInfo.realName,
   }
+  getReceiveUserInfo().then((res) => {
+    console.log('------------------------------')
+    console.log(res)
+    console.log('------------------------------')
+  })
 })
 const site = ref([])
 const detail = ref('')
@@ -224,7 +229,7 @@ function submitApplication() {
   console.log('------------------------------')
   console.log(formData.value)
   console.log('------------------------------')
-  updateEnterInfo({
+  registerReceiveUser({
     ...formData.value,
   })
   // 提交申请
@@ -308,9 +313,7 @@ function submitApplication() {
         <text class="text-[28rpx] text-[#626364]">
           所在地址
         </text>
-        <wd-col-picker
-          v-model="site" placeholder="请选择你的地址" :columns="columns" :column-change="columnChange"
-        />
+        <wd-col-picker v-model="site" placeholder="请选择你的地址" :columns="columns" :column-change="columnChange" />
       </view>
       <view class="flex items-center justify-between border-b border-[#f5f5f5] py-[30rpx]">
         <text class="text-[28rpx] text-[#626364]">
