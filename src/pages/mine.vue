@@ -169,7 +169,7 @@ onShow(() => {
         我的服务
       </view>
       <view class="grid grid-cols-[repeat(4,auto)] grid-rows-[repeat(2,auto)] mt-[50rpx] gap-[50rpx]">
-        <view class="flex flex-col items-center" @click="go('/packages/mine/share')">
+        <view class="flex flex-col items-center" @click="go('/pages/demand')">
           <image src="@img/img-017.png" mode="scaleToFill" class="h-[48rpx] w-[46rpx]" />
           <text class="mt-[10rpx] text-[24rpx] text-[#000000]">
             发布订单

@@ -15,28 +15,6 @@ import { back, go, reloadUrl } from '@/utils/tools'
 const toast = useToast()
 const message = useMessage()
 const userStore = useUserStore()
-onLoad(() => {
-
-})
-const { loading, data, run } = useUpload<string>()
-function dmeo() {
-  uni.chooseImage({
-    success: (chooseImageRes) => {
-      const tempFilePaths = chooseImageRes.tempFilePaths
-      uni.uploadFile({
-        url: import.meta.env.VITE_UPLOAD_BASEURL,
-        filePath: tempFilePaths[0],
-        name: 'file',
-        formData: {
-
-        },
-        success: (uploadFileRes) => {
-          console.log(uploadFileRes.data)
-        },
-      })
-    },
-  })
-}
 </script>
 
 <template>
@@ -45,10 +23,7 @@ function dmeo() {
       title="关于我们" left-arrow custom-style="background-color: transparent !important;" :placeholder="true"
       :fixed="false" :bordered="false" :safe-area-inset-top="true" @click-left="back"
     />
-    <view class="mx-[30rpx] mt-[30rpx] flex flex-col items-center justify-center gap-[30rpx]" @click="run">
-      <image src="" mode="scaleToFill" class="h-[150rpx] w-[150rpx] rounded-full bg-[#e6e7e6]" />
-    </view>
-    <view class="mx-[30rpx] mt-[30rpx] flex flex-col items-center justify-center gap-[30rpx]" @click="dmeo">
+    <view class="mx-[30rpx] mt-[30rpx] flex flex-col items-center justify-center gap-[30rpx]">
       <image src="" mode="scaleToFill" class="h-[150rpx] w-[150rpx] rounded-full bg-[#e6e7e6]" />
     </view>
     <view

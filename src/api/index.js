@@ -88,6 +88,10 @@ export function getStatis() {
 export function getContinueOrderDetail(data) {
   return http.post('/order/continueOrderDetail', data)
 }
+// 客户端 currentUser/commissionDetails
+export function getCommissionDetails(data) {
+  return http.post('/currentUser/commissionDetails', data)
+}
 // 独有
 // 订单列表
 export function getOrderList(data) {
@@ -217,6 +221,6 @@ export function getTravelTrade(data) {
   return http.post('/travel/trade', data)
 }
 // 客户端获取入驻信息 /currentUser/getReceiveUserInfo
-export function getReceiveUserInfo() {
-  return http.post('/currentUser/getReceiveUserInfo')
+export function getReceiveUserInfo(data) {
+  return http.post('/currentUser/getReceiveUserInfo', data)
 }

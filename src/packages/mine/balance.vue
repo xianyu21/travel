@@ -10,7 +10,6 @@
 <script lang="ts" setup>
 import { useMessage, useToast } from 'wot-design-uni'
 import { getDrawApply } from '@/api/index'
-import PaymentPicker from '@/components/PaymentPicker.vue'
 import { useUserStore } from '@/store'
 import { back, go, reloadUrl } from '@/utils/tools'
 
@@ -130,7 +129,7 @@ async function submitWithdrawal() {
       </view>
     </view>
     <!--  -->
-    <PaymentPicker v-model="withdrawalData.payType" />
+    <ol-paymentPicker v-model="withdrawalData.payType" :disabled-payments="[1, 2]" />
     <!-- 提现须知 -->
     <view class="mx-[30rpx] mt-[30rpx] rounded-[20rpx] p-[30rpx]">
       <view class="mb-[20rpx] text-[30rpx] text-[#666666] font-medium">

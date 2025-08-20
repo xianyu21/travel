@@ -88,7 +88,7 @@ function handleClick() {
 <template>
   <div class="relative overflow-hidden rounded-[20rpx] bg-[#fff]" @click="handleClick">
     <view class="relative">
-      <image :src="scenicData.imgUrls || ''" mode="aspectFill" class="h-[330rpx] w-full bg-[#eaeaea]" />
+      <image :src="scenicData?.imgUrls || ''" mode="aspectFill" class="h-[330rpx] w-full bg-[#eaeaea]" />
       <template v-if="enableFavorite">
         <view
           class="absolute right-[20rpx] top-[20rpx] h-[60rpx] w-[60rpx] flex items-center justify-center rounded-full bg-[rgba(0,0,0,0.3)]"

@@ -24,7 +24,7 @@ const formData = ref({
   headUrl: '/static/images/avatar-default.png',
   realName: '冯宝宝',
   gender: '男',
-  phone: 13645454545,
+  phone: '',
   province: '',
   provinceId: '',
   city: '',
@@ -34,11 +34,6 @@ const formData = ref({
   address: '',
   idCard: '500104199710253541',
   introduction: '人民话多爱交朋友',
-  // isDriver: '是',
-  // serviceItems: '陪拍陪玩｜陪伴游戏',
-  // serviceTime: '',
-  // emergencyContact: '王美美',
-  // emergencyPhone: '15815421241',
 })
 
 // 证件照片
@@ -104,18 +99,17 @@ function resetForm() {
     .then(() => {
       // 重置表单数据
       Object.assign(formData.value, {
-        avatar: '/static/images/avatar-default.png',
-        name: '',
-        gender: '男',
-        phone: '',
+        gender: '',
         address: '',
-        introduction: '',
         idCard: '',
-        isDriver: '是',
-        serviceItems: '',
-        serviceTime: '',
-        emergencyContact: '',
-        emergencyPhone: '',
+        introduction: '',
+        province: '',
+        provinceId: '',
+        city: '',
+        cityId: '',
+        county: '',
+        countyId: '',
+        address: '',
       })
 
       // 重置证件照片
@@ -134,8 +128,14 @@ onLoad(() => {
     ...formData.value,
     headUrl: userStore.userInfo.headUrl,
     realName: userStore.userInfo.realName,
+    phone: userStore.userInfo.phone,
   }
-  getReceiveUserInfo().then((res) => {
+  console.log('------------------------------')
+  console.log(userStore.userInfo.phone)
+  console.log('------------------------------')
+  getReceiveUserInfo({
+    phone: userStore.userInfo.phone,
+  }).then((res) => {
     console.log('------------------------------')
     console.log(res)
     console.log('------------------------------')
@@ -180,9 +180,6 @@ function getAreaNames(codes) {
   return result
 }
 function columnChange({ selectedItem, resolve, finish }) {
-  console.log('------------------------------')
-  console.log(colPickerData)
-  console.log('------------------------------')
   const areaData = findChildrenByCode(colPickerData, selectedItem.value)
   if (areaData && areaData.length) {
     resolve(
@@ -305,7 +302,7 @@ function submitApplication() {
           手机号
         </text>
         <wd-input
-          v-model="formData.phone" type="number" :maxlength="11" no-border placeholder="请输入手机号"
+          v-model="formData.phone" type="number" readonly :maxlength="11" no-border placeholder="请输入手机号"
           custom-input-class="text-right"
         />
       </view>
@@ -340,117 +337,6 @@ function submitApplication() {
         />
       </view>
     </view>
-    <!--  -->
-    <view class="mx-[30rpx] mt-[30rpx] rounded-[20rpx] bg-white p-[30rpx]">
-      <view class="flex items-center justify-between border-b border-[#f5f5f5] py-[30rpx]">
-        <text class="text-[28rpx] text-[#626364]">
-          是否有车
-        </text>
-        <view class="flex items-center">
-          <view class="mr-[20rpx] flex items-center">
-            <view
-              class="mr-[10rpx] h-[30rpx] w-[30rpx] border-2 rounded-full"
-              :class="formData.isDriver === '是' ? 'border-[#4facfe] bg-[#4facfe]' : 'border-[#ddd]'"
-            >
-              <text v-if="formData.isDriver === '是'" class="text-[16rpx] text-white">
-                ✓
-              </text>
-            </view>
-            <text class="text-[28rpx] text-[#626364]">
-              是
-            </text>
-          </view>
-          <view class="flex items-center">
-            <view
-              class="mr-[10rpx] h-[30rpx] w-[30rpx] border-2 rounded-full"
-              :class="formData.isDriver === '否' ? 'border-[#4facfe] bg-[#4facfe]' : 'border-[#ddd]'"
-            >
-              <text v-if="formData.isDriver === '否'" class="text-[16rpx] text-white">
-                ✓
-              </text>
-            </view>
-            <text class="text-[28rpx] text-[#626364]">
-              否
-            </text>
-          </view>
-        </view>
-      </view>
-      <view
-        class="flex items-center justify-between border-b border-[#f5f5f5] py-[30rpx]"
-        @click="editField('serviceItems', '服务项目')"
-      >
-        <text class="text-[28rpx] text-[#626364]">
-          服务项目
-        </text>
-        <text class="text-[28rpx] text-[#626364]">
-          {{ formData.serviceItems }}
-        </text>
-      </view>
-      <view
-        class="flex items-center justify-between border-b border-[#f5f5f5] py-[30rpx]"
-        @click="editField('serviceTime', '服务时间')"
-      >
-        <text class="text-[28rpx] text-[#626364]">
-          服务时间
-        </text>
-        <text class="text-[28rpx] text-[#999]">
-          {{ formData.serviceTime || '请选择' }}
-        </text>
-      </view>
-    </view>
-    <view class="mx-[30rpx] mt-[30rpx] rounded-[20rpx] bg-white p-[30rpx]">
-      <!-- 紧急联系人 -->
-      <view
-        class="flex items-center justify-between border-b border-[#f5f5f5] py-[30rpx]"
-        @click="editField('emergencyContact', '紧急联系人')"
-      >
-        <text class="text-[28rpx] text-[#626364]">
-          紧急联系人
-        </text>
-        <text class="text-[28rpx] text-[#626364]">
-          {{ formData.emergencyContact }}
-        </text>
-      </view>
-
-      <!-- 紧急联系人电话 -->
-      <view class="flex items-center justify-between py-[30rpx]" @click="editField('emergencyPhone', '紧急联系人电话')">
-        <text class="text-[28rpx] text-[#626364]">
-          紧急联系人电话
-        </text>
-        <text class="text-[28rpx] text-[#626364]">
-          {{ formData.emergencyPhone }}
-        </text>
-      </view>
-    </view>
-    <!-- 相关资质 -->
-    <view class="mx-[30rpx] mt-[30rpx] rounded-[20rpx] bg-white p-[30rpx]">
-      <view class="mb-[30rpx] text-[28rpx] text-[#626364] font-medium">
-        相关资质
-      </view>
-
-      <view class="grid grid-cols-2 gap-[20rpx]">
-        <view
-          v-for="(cert, index) in certificates" :key="index"
-          class="aspect-square flex flex-col items-center justify-center border-2 border-[#ddd] rounded-[10rpx] border-dashed"
-          @click="uploadCertificate(index)"
-        >
-          <image v-if="cert.image" :src="cert.image" mode="aspectFill" class="h-full w-full rounded-[8rpx]" />
-          <view v-else class="flex flex-col items-center">
-            <text class="mb-[10rpx] text-[40rpx] text-[#ddd]">
-              +
-            </text>
-            <text class="text-[24rpx] text-[#999]">
-              {{ cert.name }}
-            </text>
-            <text v-if="cert.name.includes('身份证') || cert.name.includes('个人生活照')" class="text-[20rpx] text-[#ff4d4f]">
-              *
-            </text>
-          </view>
-        </view>
-      </view>
-    </view>
-
-    <!-- 隐私协议 -->
     <view class="mx-[30rpx] mt-[30rpx] flex items-center justify-center">
       <wd-checkbox v-model="agreePrivacy" />
       <text class="ml-[10rpx] text-[24rpx] text-[#181818]">
@@ -458,17 +344,13 @@ function submitApplication() {
       </text>
     </view>
 
-    <!-- 底部按钮 -->
     <view class="fixed bottom-[40rpx] left-[30rpx] right-[30rpx] flex gap-[20rpx]">
-      <!-- 重置按钮 -->
       <view
         class="h-[90rpx] flex flex-1 items-center justify-center border border-[#ddd] rounded-[45rpx] bg-white text-[28rpx] text-[#666]"
         @click="resetForm"
       >
         重置
       </view>
-
-      <!-- 提交申请按钮 -->
       <view
         class="h-[90rpx] flex flex-1 items-center justify-center rounded-[45rpx] text-[28rpx] text-white"
         style="background: linear-gradient(106deg, #078af3 0%, #0668eb 100%);" @click="submitApplication"

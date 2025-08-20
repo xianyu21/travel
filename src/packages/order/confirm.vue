@@ -10,7 +10,6 @@
 <script lang="ts" setup>
 import { useMessage, useToast } from 'wot-design-uni'
 import { getMyDefaltAddr, getTravelOrder, getTravelTrade } from '@/api/index'
-import PaymentPicker from '@/components/PaymentPicker.vue'
 import { useUserStore } from '@/store'
 import { back, go, reloadUrl } from '@/utils/tools'
 
@@ -219,7 +218,7 @@ function confirmTimeSelection(timeData) {
         </view>
       </view>
     </view>
-    <PaymentPicker v-model="formData.payType" />
+    <ol-paymentPicker v-model="formData.payType" :disabled-payments="[1, 2]" />
     <view class="mb-8 mt-[42rpx] flex items-center justify-center">
       <wd-checkbox v-model="isCheck" checked-color="#0680F0" size="26rpx" />
       <text class="text-[24rpx] text-[#181818]">

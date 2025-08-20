@@ -24,8 +24,8 @@ export default defineManifestConfig({
   'name': VITE_APP_TITLE,
   'appid': VITE_UNI_APPID,
   'description': '',
-  'versionName': '1.0.0',
-  'versionCode': '100',
+  'versionName': '1.0.1',
+  'versionCode': '101',
   'transformPx': false,
   'locale': VITE_FALLBACK_LOCALE, // 'zh-Hans'
   'h5': {
@@ -38,24 +38,18 @@ export default defineManifestConfig({
     usingComponents: true,
     nvueStyleCompiler: 'uni-app',
     compilerVersion: 3,
-    compatible: {
-      ignoreVersion: true,
-    },
     splashscreen: {
       alwaysShowBeforeRender: true,
       waiting: true,
       autoclose: true,
       delay: 0,
     },
-    /* 模块配置 */
-    modules: {},
-    /* 应用发布信息 */
+    modules: {
+      Payment: {},
+      Geolocation: {},
+    },
     distribute: {
-      /* android打包配置 */
       android: {
-        minSdkVersion: 30,
-        targetSdkVersion: 30,
-        abiFilters: ['armeabi-v7a', 'arm64-v8a'],
         permissions: [
           '<uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>',
           '<uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>',
@@ -73,32 +67,37 @@ export default defineManifestConfig({
           '<uses-feature android:name="android.hardware.camera"/>',
           '<uses-permission android:name="android.permission.WRITE_SETTINGS"/>',
         ],
+        minSdkVersion: 26,
+        targetSdkVersion: 30,
+        abiFilters: ['armeabi-v7a', 'arm64-v8a'],
       },
-      /* ios打包配置 */
       ios: {},
-      /* SDK配置 */
       sdkConfigs: {
         maps: {
           amap: {
-            name: 'amap_15876289266BSuyJ0Nmw',
-            appkey_ios: '99ba89b02abfbbc6652e0511cc264d0a',
-            appkey_android: 'aedc6ebbf65138689f5abe11939c00a8',
+            name: 'amapFYZcQB5R',
+            appkey_ios: '43a61bf2c30890e801d5426d7e46dcbd',
+            appkey_android: 'ca7eb5875d556e46b0144ced6d4529ab',
           },
         },
         geolocation: {
-          system: {
-            __platform__: ['ios', 'android'],
-          },
           amap: {
-            name: 'amap_15876289266BSuyJ0Nmw',
+            name: 'amapFYZcQB5R',
             __platform__: ['ios', 'android'],
-            appkey_ios: '99ba89b02abfbbc6652e0511cc264d0a',
-            appkey_android: 'aedc6ebbf65138689f5abe11939c00a8',
+            appkey_ios: '43a61bf2c30890e801d5426d7e46dcbd',
+            appkey_android: 'ca7eb5875d556e46b0144ced6d4529ab',
+          },
+        },
+        payment: {
+          alipay: {
+            __platform__: ['ios', 'android'],
           },
         },
       },
-      /* 图标配置 */
       icons: {},
+    },
+    compatible: {
+      ignoreVersion: true,
     },
   },
   /* 快应用特有相关 */

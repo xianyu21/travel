@@ -10,7 +10,6 @@
 <script setup>
 import { useMessage, useToast } from 'wot-design-uni'
 import { getServiceDetail, getServiceList, getTravelPunishOrder, getTravelTrade } from '@/api/index'
-import PaymentPicker from '@/components/PaymentPicker.vue'
 import ServiceProjectPicker from '@/components/ServiceProjectPicker.vue'
 import ServiceTimePicker from '@/components/ServiceTimePicker.vue'
 import { useUserStore } from '@/store'
@@ -150,9 +149,12 @@ function submitOrder() {
       setTimeout(() => {
         back()
       }, 1500)
+    }).catch((err) => {
+      console.log(err)
     })
-  }).catch(() => {
+  }).catch((err) => {
     // 取消操作
+    console.log(err)
   })
 }
 
@@ -364,7 +366,7 @@ onUnload(() => {
         </view>
       </view>
     </view>
-    <PaymentPicker v-model="formData.payType" />
+    <ol-paymentPicker v-model="formData.payType" :disabled-payments="[1, 2]" />
     <!--  -->
     <view class="mt-[130rpx] flex items-center justify-center">
       <wd-checkbox v-model="isCheck" size="large" checked-color="#0669EB" />

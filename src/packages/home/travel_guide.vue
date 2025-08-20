@@ -59,7 +59,7 @@ async function queryList(pageNo, pageSize) {
         <view class="flex">
           <!-- 攻略图片 -->
           <image
-            :src="guide.imgUrls" mode="aspectFill"
+            :src="guide?.imgUrls" mode="aspectFill"
             class="mr-[20rpx] h-[160rpx] w-[160rpx] flex-shrink-0 rounded-[10rpx]"
           />
 

@@ -109,21 +109,21 @@ function navigateToDetail(id: number) {
 
 const travelList = ref([])
 async function init() {
-  // const res = await getTravelList({
-  //   page: {
-  //     page: 1,
-  //     limit: 10,
-  //   },
-  //   longitude: '',
-  //   latitude: '',
-  //   gender: '',
-  //   hasCar: '',
-  //   orderType: '',
-  // })
-  // console.log('------------------------------')
-  // console.log(res)
-  // console.log('------------------------------')
-  // travelList.value = res.data.list
+  const res = await getTravelList({
+    page: {
+      page: 1,
+      limit: 10,
+    },
+    longitude: '',
+    latitude: '',
+    gender: '',
+    hasCar: '',
+    orderType: '',
+  })
+  console.log('------------------------------')
+  console.log(res)
+  console.log('------------------------------')
+  travelList.value = res.data.list
 }
 const show = ref(false)
 const value = ref(1)
@@ -137,7 +137,7 @@ onLoad(async () => {
       page: 1,
       limit: 4,
     },
-    isHot: 1,
+    // isHot: 1,
   })
   spotHotList.value = res1.data.list
   const res2 = await getSpotPage({
@@ -145,7 +145,7 @@ onLoad(async () => {
       page: 1,
       limit: 3,
     },
-    isRecommend: 1,
+    // isRecommend: 1,
   })
   spotRecommendList.value = res2.data.list
   init()
@@ -182,8 +182,7 @@ function onNext(e) {
 </script>
 
 <template>
-  <view class="home-container bg-[#FAFAFA]" :style="{ paddingTop: `${safeAreaInsets?.top || 0}px` }">
-    <!-- 顶部导航栏 -->
+  <view class="home-container bg-[#FAFAFA] pb-[30rpx]" :style="{ paddingTop: `${safeAreaInsets?.top || 0}px` }">
     <view class="top-bar">
       <view class="location felx items-center gap-[12rpx]">
         <image src="@img/img-030.png" mode="scaleToFill" class="h-[29.36rpx] w-[26.42rpx]" />
@@ -216,13 +215,13 @@ function onNext(e) {
           我的景点
         </text>
       </view>
-      <view class="feature-item">
+      <view class="feature-item" @click="go('/packages/home/collect_travel')">
         <image src="@img/img-003.png" mode="scaleToFill" class="h-[86rpx] w-[86rpx]" />
         <text class="mt-[14rpx] text-[24rpx] text-[#747474]">
           收藏旅接
         </text>
       </view>
-      <view class="feature-item">
+      <view class="feature-item" @click="go('/packages/mine/entry_information')">
         <image src="@img/img-004.png" mode="scaleToFill" class="h-[86rpx] w-[86rpx]" />
         <text class="mt-[14rpx] text-[24rpx] text-[#747474]">
           旅接入驻
@@ -237,30 +236,18 @@ function onNext(e) {
         <div
           class="col-span-2 row-span-6 h-[352rpx] flex items-center justify-center rounded-[16rpx] text-xl font-bold"
         >
-          <image
-            src=""
-            mode="scaleToFill"
-            class="h-full w-full bg-[#007aff]"
-          />
+          <image :src="spotRecommendList[0]?.imgUrls" mode="scaleToFill" class="h-full w-full rounded-[12rpx] bg-[#007aff]" />
         </div>
         <div class="row-span-3 h-[162rpx] flex items-center justify-center rounded-[16rpx] bg-[#eaeaea]">
-          <image
-            src=""
-            mode="scaleToFill"
-            class="h-full w-full bg-[#007aff]"
-          />
+          <image :src="spotRecommendList[1]?.imgUrls" mode="scaleToFill" class="h-full w-full rounded-[12rpx] bg-[#007aff]" />
         </div>
         <div class="row-span-3 h-[162rpx] flex items-center justify-center rounded-[16rpx] bg-[#eaeaea]">
-          <image
-            src=""
-            mode="scaleToFill"
-            class="h-full w-full bg-[#007aff]"
-          />
+          <image :src="spotRecommendList[2]?.imgUrls" mode="scaleToFill" class="h-full w-full rounded-[12rpx] bg-[#007aff]" />
         </div>
       </div>
     </view>
     <view class="mx-[30rpx] mt-[30rpx]">
-      <image :src="swiperList2[0].imgUrls" mode="scaleToFill" class="h-[154rpx] w-full rounded-[20rpx] bg-[#eaeaea]" />
+      <image :src="swiperList2[0]?.imgUrls" mode="scaleToFill" class="h-[154rpx] w-full rounded-[20rpx] bg-[#eaeaea]" />
     </view>
     <view class="mx-[30rpx] mt-[32rpx] flex items-center justify-between text-[32rpx]">
       <view class="flex items-center">
@@ -284,91 +271,79 @@ function onNext(e) {
     <view class="mx-[30rpx] mt-[30rpx] text-[32rpx] text-[#333333] font-bold">
       旅接推荐
     </view>
-    <view class="travel-recommendation">
-      <view class="filter-bar">
-        <text>全部</text>
-        <text>性别</text>
-        <text>单量</text>
-        <text>评分</text>
-        <wd-sort-button v-model="value" title="带车" @change="handleChange" />
-      </view>
-      <view class="flex flex-col gap-[32rpx]">
-        <view
-          v-for="(travel, index) in travelList" :key="travel.id"
-          @click="go('/packages/travel/details', { receiveUserId: travel.receiveUserId })"
-        >
-          <!-- <template v-if="index == 1">
-            <image src="" mode="scaleToFill" class="h-[154rpx] w-full rounded-[20rpx] bg-[#eaeaea]" />
-          </template>
-<template v-else> -->
-          <view class="travel-card gap-[18rpx] rounded-[20rpx] p-[30rpx]">
-            <view class="relative w-[190rpx] overflow-hidden">
-              <!-- <image src="@img/img-006.png" mode="scaleToFill" class="absolute left-0 top-0 z-1 h-[36rpx] w-[86rpx]" /> -->
-              <view
-                v-if="travel?.isService === 1"
-                class="absolute left-0 top-0 z-1 h-[36rpx] w-[86rpx] text-center text-[20rpx] text-[#fff] leading-[36rpx]"
-                style="background: linear-gradient( 268deg, #FFCE8E 0%, #FFA64D 100%);border-radius:  12rpx 0rpx ;"
-              >
-                可服务
+    <!-- <view class="mx-4 mt-2 rounded-lg pb-4" /> -->
+    <view class="mt-[20rpx] flex flex-col gap-[32rpx]">
+      <view
+        v-for="travel in travelList" :key="travel.id"
+        class="mx-[30rpx]"
+        @click="go('/packages/travel/details', { receiveUserId: travel.receiveUserId })"
+      >
+        <view class="flex gap-[18rpx] rounded-[20rpx] bg-white p-[30rpx] shadow-sm">
+          <view class="relative w-[190rpx] overflow-hidden">
+            <view
+              v-if="travel?.isService === 1"
+              class="absolute left-0 top-0 z-1 h-[36rpx] w-[86rpx] text-center text-[20rpx] text-[#fff] leading-[36rpx]"
+              style="background: linear-gradient( 268deg, #FFCE8E 0%, #FFA64D 100%);border-radius:  12rpx 0rpx ;"
+            >
+              可服务
+            </view>
+            <view
+              v-else
+              class="absolute left-0 top-0 z-1 h-[36rpx] w-[86rpx] text-center text-[20rpx] text-[#fff] leading-[36rpx]"
+              style="background: linear-gradient( 92deg, #FFB38E 0%, #FF774D 100%);border-radius:  12rpx 0rpx ;"
+            >
+              服务中
+            </view>
+            <image :src="travel.headUrl" mode="aspectFill" class="mr-3 h-[190rpx] w-full rounded-[20rpx] object-cover" />
+            <view
+              class="absolute bottom-0 left-0 h-[36rpx] w-full text-center text-[20rpx] text-[#FFFFFF]"
+              style="background: linear-gradient( 268deg, #FF8E99 0%, #FF4D54 100%);border-radius:0 0 20rpx 20rpx;"
+            >
+              立享服务
+            </view>
+          </view>
+          <view class="w-full flex flex-1 flex-col justify-between">
+            <view class="flex items-center justify-between">
+              <view class="flex items-center gap-[10rpx]">
+                <text class="text-[32rpx] text-[#191A1D] text-[#191A1D]">
+                  {{ travel.realName }}
+                </text>
+                <image
+                  v-if="travel.gender == '女'" src="@img/girl.png" mode="scaleToFill"
+                  class="h-[32rpx] w-[32rpx]"
+                />
+                <image
+                  v-if="travel.gender == '男'" src="@img/boy.png" mode="scaleToFill"
+                  class="h-[32rpx] w-[32rpx]"
+                />
+                <image v-if="travel.hasCar === 1" src="@img/car.png" mode="scaleToFill" class="h-[32rpx] w-[32rpx]" />
               </view>
-              <view
-                v-else
-                class="absolute left-0 top-0 z-1 h-[36rpx] w-[86rpx] text-center text-[20rpx] text-[#fff] leading-[36rpx]"
-                style="background: linear-gradient( 92deg, #FFB38E 0%, #FF774D 100%);border-radius:  12rpx 0rpx ;"
-              >
-                服务中
-              </view>
-              <image :src="travel.headUrl" mode="aspectFill" class="travel-avatar h-[190rpx] w-full rounded-[20rpx]" />
-              <view
-                class="absolute bottom-0 left-0 h-[36rpx] w-full text-center text-[20rpx] text-[#FFFFFF]"
-                style="background: linear-gradient( 268deg, #FF8E99 0%, #FF4D54 100%);border-radius:0 0 20rpx 20rpx;"
-              >
-                立享服务
+              <view>
+                <image src="@img/img-007.png" mode="scaleToFill" class="h-[22rpx] w-[22rpx]" />
+                <text class="text-[24rpx] text-[#333233]">
+                  {{ travel.distance || 0 }}km
+                </text>
               </view>
             </view>
-            <view class="w-full flex flex-1 flex-col justify-between">
-              <view class="flex items-center justify-between">
-                <view class="flex items-center gap-[10rpx]">
-                  <text class="text-[32rpx] text-[#191A1D] text-[#191A1D]">
-                    {{ travel.realName }}
-                  </text>
-                  <image
-                    v-if="travel.gender == '女'" src="@img/girl.png" mode="scaleToFill"
-                    class="h-[32rpx] w-[32rpx]"
-                  />
-                  <image
-                    v-if="travel.gender == '男'" src="@img/boy.png" mode="scaleToFill"
-                    class="h-[32rpx] w-[32rpx]"
-                  />
-                  <image v-if="travel.hasCar === 1" src="@img/car.png" mode="scaleToFill" class="h-[32rpx] w-[32rpx]" />
-                </view>
-                <view>
-                  <image src="@img/img-007.png" mode="scaleToFill" class="h-[22rpx] w-[22rpx]" />
-                  <text class="text-[24rpx] text-[#333233]">
-                    {{ travel.distance || 0 }}km
-                  </text>
-                </view>
+            <view class="bg-009 h-[40rpx] pl-[20rpx] text-[20rpx] text-[#555555] leading-[40rpx]">
+              {{ travel.score || 0 }}分 I 已服务{{ travel.receiveCount || 0 }}单
+            </view>
+            <view class="flex items-center justify-between">
+              <view class="text-[20rpx] text-[#787878]">
+                {{ travel?.introduction }}
               </view>
-              <view class="bg-009 h-[40rpx] pl-[20rpx] text-[20rpx] text-[#555555] leading-[40rpx]">
-                {{ travel.score || 0 }}分 I 已服务{{ travel.receiveCount || 0 }}单
-              </view>
-              <view class="flex items-center justify-between">
-                <view class="text-[20rpx] text-[#787878]">
-                  {{ travel?.introduction }}
-                </view>
-                <view
-                  class="h-[52rpx] w-[140rpx] rounded-full text-center text-[24rpx] text-[#fff] leading-[52rpx]"
-                  style="background: linear-gradient( 90deg, #078DF4 0%, #066BEB 100%);" @click.stop="onPlace(travel)"
-                >
-                  立即下单
-                </view>
+              <view
+                class="h-[52rpx] w-[140rpx] rounded-full text-center text-[24rpx] text-[#fff] leading-[52rpx]"
+                style="background: linear-gradient( 90deg, #078DF4 0%, #066BEB 100%);" @click.stop="onPlace(travel)"
+              >
+                立即下单
               </view>
             </view>
           </view>
-          <!-- </template> -->
         </view>
       </view>
     </view>
+
     <!--  -->
     <wd-popup
       v-model="show" position="bottom"
@@ -492,8 +467,7 @@ function onNext(e) {
             </view>
             <view
               class="ml-[20rpx] h-[80rpx] w-[254rpx] rounded-full text-center text-[28rpx] text-[#FFFFFF] leading-[80rpx]"
-              style="background: linear-gradient( 87deg, #0788F3 0%, #0769EB 100%);"
-              @click="onNext"
+              style="background: linear-gradient( 87deg, #0788F3 0%, #0769EB 100%);" @click="onNext"
             >
               确认下单
             </view>
@@ -585,58 +559,6 @@ function onNext(e) {
         .spot-description {
           @apply text-xs opacity-80;
         }
-      }
-    }
-  }
-}
-
-.travel-recommendation {
-  @apply mt-2 mx-4 rounded-lg pb-4;
-
-  .filter-bar {
-    @apply flex justify-around text-sm text-gray-600 pb-2;
-  }
-
-  .travel-card {
-    @apply flex bg-white shadow-sm;
-
-    .travel-avatar {
-      @apply object-cover mr-3;
-    }
-
-    .travel-content {
-      @apply flex-1 flex flex-col;
-
-      .travel-header {
-        @apply flex items-center justify-between mb-1;
-
-        .travel-name {
-          @apply text-base font-bold;
-        }
-
-        .travel-rating {
-          @apply flex items-center;
-        }
-
-        .travel-distance {
-          @apply text-sm text-gray-500;
-        }
-      }
-
-      .travel-description {
-        @apply text-xs text-gray-600 mb-1 line-clamp-2;
-      }
-
-      .travel-tags {
-        @apply flex flex-wrap gap-1 mb-2;
-
-        .tag {
-          @apply text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full;
-        }
-      }
-
-      .action-button {
-        @apply self-end bg-blue-500 text-white text-sm px-4 py-1 rounded-full;
       }
     }
   }

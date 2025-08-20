@@ -92,34 +92,21 @@ function onOrderClick(companion: any) {
 }
 const paging = ref(null)
 const dataList = ref([])
-const gender = ref()
-const hasCar = ref(0)
+const gender = ref('')
+const hasCar = ref('')
 // 1 接单量从少到多  2接单量从多到少  3评分从低到高 4评分从高到低
 const orderType = ref()
-function queryList(pageNo, pageSize) {
-  console.log('------------------------------')
-  console.log({
+async function queryList(pageNo, pageSize) {
+  const res = await getTravelList({
     page: {
-      page: pageNo,
-      limit: pageSize,
+      page: 1,
+      limit: 10,
     },
     gender: gender.value,
     hasCar: hasCar.value,
     orderType: orderType.value,
   })
-  console.log('------------------------------')
-  // const res = await getTravelList({
-  //   page: {
-  //     page: 1,
-  //     limit: 10,
-  //   },
-  //   longitude: '',
-  //   latitude: '',
-  //   gender: '',
-  //   hasCar: '',
-  //   orderType: '',
-  // })
-  paging.value.complete(companions.value)
+  paging.value.complete(res.data.list)
 }
 const swiperList1 = ref([])
 onLoad(async () => {
@@ -253,74 +240,77 @@ function handleChange2({ value }) {
         </view>
       </view>
     </template>
-    <view class="space-y-[30rpx]">
-      <view v-for="(companion, index) in companions" :key="companion.id">
-        <!-- 中间插入广告Banner -->
-        <view v-if="index === 1" class="mb-[30rpx] h-[160rpx] w-full overflow-hidden rounded-[20rpx]">
-          <image src="/static/images/ad-banner.jpg" mode="aspectFill" class="h-full w-full" />
-        </view>
+    <!-- <view class="space-y-[30rpx]">
+      <view v-for="(companion, index) in dataList" :key="companion.id">
 
-        <!-- 旅接卡片 -->
-        <view class="flex rounded-[20rpx] bg-white p-[20rpx]">
-          <view class="relative h-[160rpx] w-[160rpx] flex-shrink-0 overflow-hidden rounded-[15rpx]">
-            <image :src="companion.avatar" mode="aspectFill" class="h-full w-full" />
-
-            <!-- 状态标签 -->
+      </view>
+    </view> -->
+    <view class="flex flex-col gap-[32rpx]">
+      <view
+        v-for="travel in dataList"
+        :key="travel.id" class="mx-[30rpx]"
+        @click="go('/packages/travel/details', { receiveUserId: travel.receiveUserId })"
+      >
+        <view class="flex gap-[18rpx] rounded-[20rpx] bg-white p-[30rpx]">
+          <view class="relative w-[190rpx] overflow-hidden">
             <view
-              class="absolute left-[10rpx] top-[10rpx] rounded-[10rpx] px-[10rpx] py-[5rpx] text-[22rpx] text-white"
-              :class="companion.statusColor === 'green' ? 'bg-green-500' : 'bg-red-500'"
+              v-if="travel?.isService === 1"
+              class="absolute left-0 top-0 z-1 h-[36rpx] w-[86rpx] text-center text-[20rpx] text-[#fff] leading-[36rpx]"
+              style="background: linear-gradient( 268deg, #FFCE8E 0%, #FFA64D 100%);border-radius:  12rpx 0rpx ;"
             >
-              {{ companion.status }}
+              可服务
             </view>
-
-            <!-- 底部时间信息 -->
             <view
-              v-if="companion.availableTime"
-              class="absolute bottom-0 left-0 w-full bg-red-500 p-[5rpx] text-center text-[22rpx] text-white"
+              v-else
+              class="absolute left-0 top-0 z-1 h-[36rpx] w-[86rpx] text-center text-[20rpx] text-[#fff] leading-[36rpx]"
+              style="background: linear-gradient( 92deg, #FFB38E 0%, #FF774D 100%);border-radius:  12rpx 0rpx ;"
             >
-              {{ companion.availableTime }}
+              服务中
+            </view>
+            <image :src="travel.headUrl" mode="aspectFill" class="travel-avatar h-[190rpx] w-full rounded-[20rpx]" />
+            <view
+              class="absolute bottom-0 left-0 h-[36rpx] w-full text-center text-[20rpx] text-[#FFFFFF]"
+              style="background: linear-gradient( 268deg, #FF8E99 0%, #FF4D54 100%);border-radius:0 0 20rpx 20rpx;"
+            >
+              立享服务
             </view>
           </view>
-
-          <view class="ml-[20rpx] flex-1">
+          <view class="w-full flex flex-1 flex-col justify-between">
             <view class="flex items-center justify-between">
-              <view class="flex items-center">
-                <text class="text-[30rpx] text-[#333] font-medium">
-                  {{ companion.name }}
+              <view class="flex items-center gap-[10rpx]">
+                <text class="text-[32rpx] text-[#191A1D] text-[#191A1D]">
+                  {{ travel.realName }}
                 </text>
-                <text
-                  class="ml-[10rpx] text-[28rpx]"
-                  :class="companion.gender === 'male' ? 'i-mdi-gender-male text-blue-500' : 'i-mdi-gender-female text-pink-500'"
+                <image
+                  v-if="travel.gender == '女'" src="@img/girl.png" mode="scaleToFill"
+                  class="h-[32rpx] w-[32rpx]"
                 />
-                <view
-                  v-if="companion.gender === 'male'"
-                  class="ml-[5rpx] rounded-[10rpx] bg-blue-100 px-[8rpx] py-[2rpx] text-[20rpx] text-blue-500"
-                >
-                  认证
-                </view>
+                <image
+                  v-if="travel.gender == '男'" src="@img/boy.png" mode="scaleToFill"
+                  class="h-[32rpx] w-[32rpx]"
+                />
+                <image v-if="travel.hasCar === 1" src="@img/car.png" mode="scaleToFill" class="h-[32rpx] w-[32rpx]" />
               </view>
-              <text class="text-[26rpx] text-[#999]">
-                {{ companion.distance }}km
-              </text>
+              <view>
+                <image src="@img/img-007.png" mode="scaleToFill" class="h-[22rpx] w-[22rpx]" />
+                <text class="text-[24rpx] text-[#333233]">
+                  {{ travel.distance || 0 }}km
+                </text>
+              </view>
             </view>
-
-            <view class="my-[10rpx] flex items-center">
-              <text class="border border-blue-500 rounded-[5rpx] px-[8rpx] py-[2rpx] text-[22rpx] text-blue-500">
-                {{ companion.rating }}分｜已服务{{ companion.orders }}+单
-              </text>
+            <view class="bg-009 h-[40rpx] pl-[20rpx] text-[20rpx] text-[#555555] leading-[40rpx]">
+              {{ travel.score || 0 }}分 I 已服务{{ travel.receiveCount || 0 }}单
             </view>
-
-            <view class="text-[24rpx] text-[#999] leading-[35rpx]">
-              {{ companion.tags.join('，') }}
-            </view>
-
-            <view class="mt-[15rpx] flex justify-end">
-              <wd-button
-                size="small" custom-class="!bg-blue-500 !text-white !rounded-[20rpx]"
-                @click="onOrderClick(companion)"
+            <view class="flex items-center justify-between">
+              <view class="text-[20rpx] text-[#787878]">
+                {{ travel?.introduction }}
+              </view>
+              <view
+                class="h-[52rpx] w-[140rpx] rounded-full text-center text-[24rpx] text-[#fff] leading-[52rpx]"
+                style="background: linear-gradient( 90deg, #078DF4 0%, #066BEB 100%);" @click.stop="onPlace(travel)"
               >
-                {{ companion.action }}
-              </wd-button>
+                立即下单
+              </view>
             </view>
           </view>
         </view>

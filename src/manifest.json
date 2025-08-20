@@ -2,8 +2,8 @@
   "name": "旅接",
   "appid": "__UNI__735311F",
   "description": "",
-  "versionName": "1.0.0",
-  "versionCode": "100",
+  "versionName": "1.0.1",
+  "versionCode": "101",
   "transformPx": false,
   "app-plus": {
     "usingComponents": true,
@@ -15,7 +15,10 @@
       "autoclose": true,
       "delay": 0
     },
-    "modules": {},
+    "modules": {
+      "Payment": {},
+      "Geolocation": {}
+    },
     "distribute": {
       "android": {
         "permissions": [
@@ -35,7 +38,7 @@
           "<uses-feature android:name=\"android.hardware.camera\"/>",
           "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>"
         ],
-        "minSdkVersion": 30,
+        "minSdkVersion": 26,
         "targetSdkVersion": 30,
         "abiFilters": [
           "armeabi-v7a",
@@ -46,26 +49,28 @@
       "sdkConfigs": {
         "maps": {
           "amap": {
-            "name": "amap_15876289266BSuyJ0Nmw",
-            "appkey_ios": "99ba89b02abfbbc6652e0511cc264d0a",
-            "appkey_android": "aedc6ebbf65138689f5abe11939c00a8"
+            "name": "amapFYZcQB5R",
+            "appkey_ios": "43a61bf2c30890e801d5426d7e46dcbd",
+            "appkey_android": "ca7eb5875d556e46b0144ced6d4529ab"
           }
         },
         "geolocation": {
-          "system": {
-            "__platform__": [
-              "ios",
-              "android"
-            ]
-          },
           "amap": {
-            "name": "amap_15876289266BSuyJ0Nmw",
+            "name": "amapFYZcQB5R",
             "__platform__": [
               "ios",
               "android"
             ],
-            "appkey_ios": "99ba89b02abfbbc6652e0511cc264d0a",
-            "appkey_android": "aedc6ebbf65138689f5abe11939c00a8"
+            "appkey_ios": "43a61bf2c30890e801d5426d7e46dcbd",
+            "appkey_android": "ca7eb5875d556e46b0144ced6d4529ab"
+          }
+        },
+        "payment": {
+          "alipay": {
+            "__platform__": [
+              "ios",
+              "android"
+            ]
           }
         }
       },

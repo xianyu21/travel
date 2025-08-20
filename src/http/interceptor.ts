@@ -17,6 +17,7 @@ const blacklistApis = [
   '/spot/page',
   '/service/detail',
   '/receiveUser/page',
+  '/strategy/page',
 ]
 
 /**

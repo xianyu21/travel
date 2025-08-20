@@ -9,7 +9,7 @@
 
 <script lang="ts" setup>
 import { useMessage, useToast } from 'wot-design-uni'
-import { getBalanceDetails, getStatis } from '@/api/index'
+import { getBalanceDetails, getCommissionDetails, getStatis } from '@/api/index'
 import { useUserStore } from '@/store'
 import { back, go, reloadUrl } from '@/utils/tools'
 
@@ -81,6 +81,14 @@ onLoad(() => {
     console.log(res)
     console.log('------------------------------')
     info.value = res.data
+  })
+  getCommissionDetails({
+    createTimeStart: '2025-08-17',
+    createTimeEnd: '2025-08-20',
+  }).then((res) => {
+    console.log('------------------------------')
+    console.log(res)
+    console.log('------------------------------')
   })
 })
 </script>

@@ -8,6 +8,32 @@ usePageAuth()
 
 onLaunch(() => {
   console.log('App Launch')
+  //
+  uni.getLocation({
+    type: 'gcj02',
+    geocode: true,
+    highAccuracyExpireTime: 4000,
+    isHighAccuracy: true,
+    success(res) {
+      console.log('------------------------------')
+      console.log(res)
+      console.log('------------------------------')
+      console.log(`当前位置的经度：${res.longitude}`)
+      console.log(`当前位置的纬度：${res.latitude}`)
+    },
+    // fail(err) {
+    //   console.log('------------------------------')
+    //   console.log(err)
+    //   console.log('------------------------------')
+    // },
+    // complete(data) {
+    //   console.log('------------------------------')
+    //   console.log(data)
+    //   console.log('------------------------------')
+    //   // uni.hideLoading()
+    // },
+  })
+  //
   uni.onTabBarMidButtonTap(() => {
     console.log('点击了')
     go('/pages/demand')

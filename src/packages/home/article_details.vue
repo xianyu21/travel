@@ -51,7 +51,7 @@ onLoad((options) => {
       <!-- 封面图片 -->
       <view class="mb-[30rpx] overflow-hidden rounded-[20rpx]">
         <image
-          :src="articleDetail.imgUrls"
+          :src="articleDetail?.imgUrls"
           mode="aspectFill"
           class="h-[400rpx] w-full"
         />

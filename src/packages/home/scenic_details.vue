@@ -55,7 +55,7 @@ onLoad((options) => {
     <view class="relative pb-[180rpx]">
       <!-- 封面图片 -->
       <view class="m-[30rpx] overflow-hidden rounded-[20rpx]">
-        <image :src="scenicDetail.imgUrls" mode="aspectFill" class="h-[400rpx] w-full" />
+        <image :src="scenicDetail?.imgUrls" mode="aspectFill" class="h-[400rpx] w-full" />
       </view>
 
       <!-- 详情内容区域 -->

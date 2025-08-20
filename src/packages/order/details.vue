@@ -528,7 +528,7 @@ function continueTimeEnd() {
             </view>
           </view>
           <view class="mx-[30rpx] overflow-hidden bg-[#fff]">
-            <ol-paymentPicker v-model="continues.payType" />
+            <ol-paymentPicker v-model="continues.payType" :disabled-payments="[1, 2]" />
           </view>
           <view class="mx-[30rpx] mb-[30rpx] flex items-center justify-end bg-[#fff] px-[30rpx] pb-[30rpx]">
             <view class="flex items-end">

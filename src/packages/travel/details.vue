@@ -18,13 +18,13 @@ const message = useMessage()
 const userStore = useUserStore()
 const current = ref<number>(0)
 
-const swiperList = ref([
-  'https://registry.npmmirror.com/wot-design-uni-assets/*/files/redpanda.jpg',
-  'https://registry.npmmirror.com/wot-design-uni-assets/*/files/capybara.jpg',
-  'https://registry.npmmirror.com/wot-design-uni-assets/*/files/panda.jpg',
-  'https://registry.npmmirror.com/wot-design-uni-assets/*/files/moon.jpg',
-  'https://registry.npmmirror.com/wot-design-uni-assets/*/files/meng.jpg',
-])
+// const swiperList = ref([
+//   'https://registry.npmmirror.com/wot-design-uni-assets/*/files/redpanda.jpg',
+//   'https://registry.npmmirror.com/wot-design-uni-assets/*/files/capybara.jpg',
+//   'https://registry.npmmirror.com/wot-design-uni-assets/*/files/panda.jpg',
+//   'https://registry.npmmirror.com/wot-design-uni-assets/*/files/moon.jpg',
+//   'https://registry.npmmirror.com/wot-design-uni-assets/*/files/meng.jpg',
+// ])
 const type = ref(0)
 const value1 = ref(3)
 const info = ref({})
@@ -56,6 +56,24 @@ onLoad((options) => {
     commentInfo.value = res.data
   })
 })
+async function handleCollect() {
+  const res = await getCollect({
+    receiveUserId: info.value.receiveUserId,
+  })
+  if (res.code === 200) {
+    toast.success('收藏成功')
+    info.value.isCollected = 1
+  }
+}
+async function handleCloseCollect() {
+  const res = await getCancelCollect({
+    receiveUserId: info.value.receiveUserId,
+  })
+  if (res.code === 200) {
+    toast.success('取消收藏')
+    info.value.isCollected = 0
+  }
+}
 </script>
 
 <template>
@@ -65,9 +83,26 @@ onLoad((options) => {
       custom-style="background-color: transparent !important;border-radius: 0rpx" :fixed="true" :bordered="false"
       :safe-area-inset-top="false" @click-left="back"
     />
-    <wd-swiper v-model:current="current" :list="swiperList" height="728rpx" />
-    <view class="bg-[#fff]">
-      <view class="mx-[30rpx] mt-[32rpx] flex items-center gap-[30rpx]">
+    <!-- <wd-swiper v-model:current="current" :list="swiperList" height="728rpx" /> -->
+    <image :src="info.personalImageUrl" mode="scaleToFill" class="h-[728rpx] w-full bg-[#007aff]" />
+    <view class="relative mt-[-12rpx] rounded-[12rpx] bg-[#fff]">
+      <!--  -->
+      <image
+        v-if="info.isCollected === 0"
+        src="@img/guanzhu-2.png"
+        mode="scaleToFill"
+        class="absolute right-[42rpx] top-[-30rpx] z-100 h-[62rpx] w-[62rpx]"
+        @click="handleCollect"
+      />
+      <image
+        v-if="info.isCollected === 1"
+        src="@img/guanzhu-1.png"
+        mode="scaleToFill"
+        class="absolute right-[42rpx] top-[-30rpx] z-100 h-[62rpx] w-[62rpx]"
+        @click="handleCloseCollect"
+      />
+      <!--  -->
+      <view class="mx-[30rpx] flex items-center gap-[30rpx] pt-[32rpx]">
         <view class="relative">
           <image :src="info.headUrl" mode="scaleToFill" class="h-[132rpx] w-[130rpx] bg-[#eaeaea]" />
           <view
@@ -140,29 +175,29 @@ onLoad((options) => {
       <template v-if="type == 0">
         <view class="mx-[30rpx] mt-[30rpx] flex flex-col gap-[30rpx]">
           <view v-for="item in info.serviceList" class="flex gap-[20rpx] rounded-[8rpx] bg-[#F7FCFF] p-[30rpx]">
-            <image src="" mode="scaleToFill" class="h-[152rpx] w-[150rpx] rounded-[12rpx] bg-[#003e7e]" />
+            <image :src="item.imageUrl" mode="scaleToFill" class="h-[152rpx] w-[150rpx] rounded-[12rpx] bg-[#003e7e]" />
             <view class="w-full flex flex-1 flex-col justify-between">
               <view class="flex items-center gap-[30rpx]">
-                <text
+                <!-- <text
                   style="background: linear-gradient( 92deg, #FFCE8E 0%, #FFA64D 100%);border-radius: 20rpx 0rpx 20rpx 0rpx;"
                   class="block h-[36rpx] w-[108rpx] text-center text-[20rpx] text-[#FFFFFF] leading-[36rpx]"
                 >
                   限时秒杀
-                </text>
+                </text> -->
                 <text class="text-[32rpx] text-[#000000] font-bold">
                   {{ item.serviceName }}
                 </text>
               </view>
               <view class="text-[24rpx] text-[#002C4F]">
-                120分钟丨全程帮拍
+                {{ item.configs[0].hour * 60 }}分钟
               </view>
               <view class="flex items-center justify-between">
                 <view>
                   <text class="text-price text-[#DC3A23] font-bold">
-                    499
+                    {{ item.configs[0].discountMoney }}
                   </text>
                   <text class="text-[20rpx] text-[#A6A7A8] line-through">
-                    原价¥699
+                    原价¥{{ item.configs[0].originalMoney }}
                   </text>
                 </view>
                 <view
@@ -181,7 +216,7 @@ onLoad((options) => {
           <view class="text-[28rpx] text-[#333333]">
             评价({{ commentInfo.total }})
           </view>
-          <view class="mt-[30rpx] flex items-center justify-center gap-[30rpx]">
+          <!-- <view class="mt-[30rpx] flex items-center justify-center gap-[30rpx]">
             <view class="rounded-[4rpx] bg-[#D0EBFF] px-[12rpx] py-[6rpx] text-[20rpx] text-[#0667EA]">
               活泼开朗
             </view>
@@ -194,7 +229,7 @@ onLoad((options) => {
             <view class="rounded-[4rpx] bg-[#D0EBFF] px-[12rpx] py-[6rpx] text-[20rpx] text-[#0667EA]">
               活泼开朗
             </view>
-          </view>
+          </view> -->
           <view v-for="item in commentInfo.list" :key="item.id" class="py-[30rpx]">
             <view class="flex items-center gap-[16rpx]">
               <image :src="item.headUrl" mode="scaleToFill" class="h-[60rpx] w-[60rpx] rounded-full bg-[#eaeaea]" />
@@ -203,7 +238,7 @@ onLoad((options) => {
                   {{ item.name }}
                 </text>
                 <wd-rate
-                  v-model="item.isFineEvaluation" readonly
+                  v-model="item.star" readonly
                   active-color="linear-gradient( 180deg, #FF1A0A 0%, #FF7443 100%)" color="#D8DADB" size="18rpx"
                   space="8rpx"
                 />
