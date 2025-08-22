@@ -68,6 +68,7 @@ onUnload(() => {
   uni.$off('updataCoupon')
 })
 // 计算价格
+const payInfo = ref({})
 function calc() {
   if (!formData.value.serviceId) {
     return toast.show('请选择服务')
@@ -169,40 +170,40 @@ function confirmTimeSelection(timeData) {
     </view>
     <view class="mx-[30rpx] mt-[30rpx] rounded-[20rpx] bg-[#fff] p-[30rpx]">
       <view class="flex gap-[20rpx] rounded-[8rpx]">
-        <image src="" mode="scaleToFill" class="h-[152rpx] w-[150rpx] rounded-[12rpx] bg-[#003e7e]" />
+        <image :src="formData.imageUrl" mode="scaleToFill" class="h-[152rpx] w-[150rpx] rounded-[12rpx]" />
         <view class="w-full flex flex-1 flex-col justify-between">
           <view class="flex items-center gap-[30rpx]">
-            <text
+            <!-- <text
               style="background: linear-gradient( 92deg, #FFCE8E 0%, #FFA64D 100%);border-radius: 20rpx 0rpx 20rpx 0rpx;"
               class="block h-[36rpx] w-[108rpx] text-center text-[20rpx] text-[#FFFFFF] leading-[36rpx]"
             >
               限时秒杀
-            </text>
+            </text> -->
             <text class="text-[32rpx] text-[#000000] font-bold">
-              陪玩陪拍
+              {{ formData.serviceName }}
             </text>
           </view>
-          <view class="text-[24rpx] text-[#002C4F]">
+          <!-- <view class="text-[24rpx] text-[#002C4F]">
             120分钟丨全程帮拍
-          </view>
+          </view> -->
           <view class="flex items-center justify-between">
             <view>
               <text class="text-price text-[36rpx] text-[#DC3A23] font-bold">
-                499
+                {{ formData.discountMoney }}
               </text>
             </view>
-            <wd-input-number />
+            <wd-input-number v-model="formData.serviceCount" :min="1" :step="1" />
           </view>
         </view>
       </view>
       <view class="my-[30rpx] block h-2rpx w-full bg-[#F9F9F9]" />
-      <view class="flex items-center justify-between" @click="selectServiceProject">
+      <view class="flex items-center justify-between">
         <text class="text-[28rpx] text-[#000000]">
           预估车费(往返）
         </text>
         <view class="flex items-center">
           <text class="text-[28rpx] text-[#EA333F]">
-            ￥{{ payInfo.estimateFare }}
+            ￥{{ payInfo?.estimateFare }}
           </text>
         </view>
       </view>
@@ -218,7 +219,7 @@ function confirmTimeSelection(timeData) {
         </view>
       </view>
     </view>
-    <ol-paymentPicker v-model="formData.payType" :disabled-payments="[1, 2]" />
+    <ol-paymentPicker v-model="formData.payType" :disabled-payments="[1]" />
     <view class="mb-8 mt-[42rpx] flex items-center justify-center">
       <wd-checkbox v-model="isCheck" checked-color="#0680F0" size="26rpx" />
       <text class="text-[24rpx] text-[#181818]">

@@ -158,26 +158,53 @@ onLoad(async () => {
   })
   swiperList2.value = ret.data
 })
+const travelInfo = ref({})
+const serviceList = ref([])
+const serviceInfo = ref({})
+const durationList = ref([])
+const durationInfo = ref({})
 async function onPlace(travel) {
+  travelInfo.value = travel
+  travelInfo.value.serviceCount = 1
   const res = await getServicePlace({
     receiveUserId: travel.receiveUserId,
   })
-  const ret = await getServiceDetail({
-    serviceId: res.data[0].serviceId,
-  })
+  serviceList.value = res.data
+  serviceInfo.value = res.data[0]
+  travelInfo.value.serviceId = res.data[0].serviceId
+  await ontravel()
   show.value = true
+}
+async function ontravel() {
+  const ret = await getServiceDetail({
+    serviceId: travelInfo.value.serviceId,
+  })
+  durationList.value = ret.data
+  durationInfo.value = ret.data[0]
+  travelInfo.value.durationId = ret.data[0].durationId
 }
 function onNext(e) {
   show.value = false
   go('/packages/order/confirm', {
-    durationId: '95c93b156dc14c0e9efb34398c8e476c',
-    serviceCount: 1,
-    serviceId: '031ef90569314394b604ef5b367bbffa',
-    serviceName: '陪玩陪拍',
-    receiveUserId: '613f35c0a34e4da6aceab895611aac83',
-    receiveUserName: '夜未央',
-    hours: 4,
+    durationId: travelInfo.value.durationId,
+    serviceCount: travelInfo.value.serviceCount,
+    serviceId: travelInfo.value.serviceId,
+    serviceName: serviceInfo.value.serviceName,
+    receiveUserId: travelInfo.value.receiveUserId,
+    receiveUserName: travelInfo.value.realName,
+    hours: durationInfo.value.hour,
+    imageUrl: serviceInfo.value.imageUrl,
+    discountMoney: durationInfo.value.discountMoney,
   })
+}
+function onChangeService({ value }) {
+  const data = serviceList.value.filter(el => el.serviceId == value)
+  serviceInfo.value = data[0]
+  ontravel()
+}
+function onChangeDuration({ value }) {
+  const data = durationList.value.filter(el => el.durationId === value)
+  durationInfo.value = data[0]
 }
 </script>
 
@@ -236,13 +263,22 @@ function onNext(e) {
         <div
           class="col-span-2 row-span-6 h-[352rpx] flex items-center justify-center rounded-[16rpx] text-xl font-bold"
         >
-          <image :src="spotRecommendList[0]?.imgUrls" mode="scaleToFill" class="h-full w-full rounded-[12rpx] bg-[#007aff]" />
+          <image
+            :src="spotRecommendList[0]?.imgUrls" mode="scaleToFill"
+            class="h-full w-full rounded-[12rpx] bg-[#007aff]"
+          />
         </div>
         <div class="row-span-3 h-[162rpx] flex items-center justify-center rounded-[16rpx] bg-[#eaeaea]">
-          <image :src="spotRecommendList[1]?.imgUrls" mode="scaleToFill" class="h-full w-full rounded-[12rpx] bg-[#007aff]" />
+          <image
+            :src="spotRecommendList[1]?.imgUrls" mode="scaleToFill"
+            class="h-full w-full rounded-[12rpx] bg-[#007aff]"
+          />
         </div>
         <div class="row-span-3 h-[162rpx] flex items-center justify-center rounded-[16rpx] bg-[#eaeaea]">
-          <image :src="spotRecommendList[2]?.imgUrls" mode="scaleToFill" class="h-full w-full rounded-[12rpx] bg-[#007aff]" />
+          <image
+            :src="spotRecommendList[2]?.imgUrls" mode="scaleToFill"
+            class="h-full w-full rounded-[12rpx] bg-[#007aff]"
+          />
         </div>
       </div>
     </view>
@@ -274,8 +310,7 @@ function onNext(e) {
     <!-- <view class="mx-4 mt-2 rounded-lg pb-4" /> -->
     <view class="mt-[20rpx] flex flex-col gap-[32rpx]">
       <view
-        v-for="travel in travelList" :key="travel.id"
-        class="mx-[30rpx]"
+        v-for="travel in travelList" :key="travel.id" class="mx-[30rpx]"
         @click="go('/packages/travel/details', { receiveUserId: travel.receiveUserId })"
       >
         <view class="flex gap-[18rpx] rounded-[20rpx] bg-white p-[30rpx] shadow-sm">
@@ -294,7 +329,10 @@ function onNext(e) {
             >
               服务中
             </view>
-            <image :src="travel.headUrl" mode="aspectFill" class="mr-3 h-[190rpx] w-full rounded-[20rpx] object-cover" />
+            <image
+              :src="travel.headUrl" mode="aspectFill"
+              class="mr-3 h-[190rpx] w-full rounded-[20rpx] object-cover"
+            />
             <view
               class="absolute bottom-0 left-0 h-[36rpx] w-full text-center text-[20rpx] text-[#FFFFFF]"
               style="background: linear-gradient( 268deg, #FF8E99 0%, #FF4D54 100%);border-radius:0 0 20rpx 20rpx;"
@@ -308,14 +346,8 @@ function onNext(e) {
                 <text class="text-[32rpx] text-[#191A1D] text-[#191A1D]">
                   {{ travel.realName }}
                 </text>
-                <image
-                  v-if="travel.gender == '女'" src="@img/girl.png" mode="scaleToFill"
-                  class="h-[32rpx] w-[32rpx]"
-                />
-                <image
-                  v-if="travel.gender == '男'" src="@img/boy.png" mode="scaleToFill"
-                  class="h-[32rpx] w-[32rpx]"
-                />
+                <image v-if="travel.gender == '女'" src="@img/girl.png" mode="scaleToFill" class="h-[32rpx] w-[32rpx]" />
+                <image v-if="travel.gender == '男'" src="@img/boy.png" mode="scaleToFill" class="h-[32rpx] w-[32rpx]" />
                 <image v-if="travel.hasCar === 1" src="@img/car.png" mode="scaleToFill" class="h-[32rpx] w-[32rpx]" />
               </view>
               <view>
@@ -343,7 +375,6 @@ function onNext(e) {
         </view>
       </view>
     </view>
-
     <!--  -->
     <wd-popup
       v-model="show" position="bottom"
@@ -352,7 +383,7 @@ function onNext(e) {
     >
       <view class="m-[30rpx] flex gap-[30rpx]">
         <view class="relative">
-          <image src="" mode="scaleToFill" class="h-[132rpx] w-[130rpx] bg-[#eaeaea]" />
+          <image :src="travelInfo.headUrl" mode="scaleToFill" class="h-[132rpx] w-[130rpx] bg-[#eaeaea]" />
           <view
             class="absolute bottom-0 left-0 h-[36rpx] w-[86rpx] text-center text-[20rpx] text-[#fff] leading-[36rpx]"
             style="background: linear-gradient( 268deg, #FFCE8E 0%, #FFA64D 100%);border-radius:  0rpx 12rpx;"
@@ -363,17 +394,17 @@ function onNext(e) {
         <view class="w-full flex flex-col justify-between">
           <view class="flex items-center gap-[10rpx]">
             <text class="text-[32rpx] text-[#191A1D] font-bold">
-              冯宝宝
+              {{ travelInfo.realName }}
             </text>
-            <image src="@img/girl.png" mode="scaleToFill" class="h-[32rpx] w-[32rpx]" />
-            <image src="@img/boy.png" mode="scaleToFill" class="h-[32rpx] w-[32rpx]" />
-            <image src="@img/car.png" mode="scaleToFill" class="h-[32rpx] w-[32rpx]" />
+            <image v-if="travelInfo.gender == '女'" src="@img/girl.png" mode="scaleToFill" class="h-[32rpx] w-[32rpx]" />
+            <image v-if="travelInfo.gender == '男'" src="@img/boy.png" mode="scaleToFill" class="h-[32rpx] w-[32rpx]" />
+            <image v-if="travelInfo.hasCar == 1" src="@img/car.png" mode="scaleToFill" class="h-[32rpx] w-[32rpx]" />
             <text class="text-[#D62929] text-[24prx]">
-              5.0分
+              {{ travelInfo.score }}分
             </text>
           </view>
           <view class="w-[450rpx] truncate text-[24rpx] text-[#787878]">
-            为人活泼开朗，个性自信大方，会帮忙拍照，1为人活泼开朗，个性自信大方，会帮忙拍照，1...
+            {{ travelInfo.introduction }}
           </view>
           <view class="flex items-center gap-[18rpx]">
             <view class="flex items-center gap-[4rpx]">
@@ -399,11 +430,14 @@ function onNext(e) {
       </view>
       <view class="m-[30rpx] rounded-[12rpx] bg-[#fff]">
         <view class="flex gap-[20rpx] p-[30rpx]" style="border-bottom: 2rpx solid #F6F6F6;">
-          <image src="" mode="scaleToFill" class="h-[152rpx] w-[150rpx] rounded-[12rpx] bg-[#eaeaea]" />
+          <image
+            :src="serviceInfo.imageUrl" mode="scaleToFill"
+            class="h-[152rpx] w-[150rpx] rounded-[12rpx] bg-[#eaeaea]"
+          />
           <view class="w-full flex flex-1 flex-col justify-between">
             <view class="flex items-center gap-[10rpx]">
               <text class="text-price text-[44rpx] text-[#FF0011]">
-                499
+                {{ durationInfo.discountMoney }}
               </text>
               <view
                 class="h-[36rpx] w-[108rpx] text-center text-[20rpx] text-[#fff] leading-[36rpx]"
@@ -420,15 +454,14 @@ function onNext(e) {
             </view>
             <view>
               <text class="mr-[10rpx] text-[24rpx] text-[#A6A7A8] line-through">
-                原价¥699
+                原价¥{{ durationInfo.originalMoney }}
               </text>
-
-              <text class="text-[24rpx] text-[#002C4F]">
+              <!-- <text class="text-[24rpx] text-[#002C4F]">
                 全程帮拍
-              </text>
+              </text> -->
             </view>
             <view class="text-[24rpx] text-[#002C4F]">
-              当前已选 陪玩陪拍
+              当前已选 {{ serviceInfo.serviceName }}
             </view>
           </view>
         </view>
@@ -436,35 +469,34 @@ function onNext(e) {
           <view class="text-[28rpx] text-[#333333] font-bold">
             服务项目
           </view>
-          <wd-radio-group v-model="value" cell shape="button">
-            <wd-radio :value="1">
-              沃特
+          <wd-radio-group v-model="travelInfo.serviceId" cell shape="button" @change="onChangeService">
+            <wd-radio v-for="item in serviceList" :key="item.id" :value="item.serviceId">
+              {{ item.serviceName }}
             </wd-radio>
-            <wd-radio :value="2">
-              商家后台
-            </wd-radio>
-            <wd-radio :value="3">
-              沃特
-            </wd-radio>
-            <wd-radio :value="4">
-              商家后台
+          </wd-radio-group>
+          <view class="text-[28rpx] text-[#333333] font-bold">
+            服务时间
+          </view>
+          <wd-radio-group v-model="travelInfo.durationId" cell shape="button" @change="onChangeDuration">
+            <wd-radio v-for="item in durationList" :key="item.id" :value="item.durationId">
+              {{ item.hour }}小时
             </wd-radio>
           </wd-radio-group>
           <view class="mt-[30rpx] flex items-center justify-between">
             <text class="text-[28rpx] text-[#333333] font-bold">
               购买数量
             </text>
-            <wd-input-number />
+            <wd-input-number v-model="travelInfo.serviceCount" :min="1" :step="1" />
           </view>
           <view class="mt-[42rpx] flex items-center justify-end">
-            <view class="flex items-end">
+            <!-- <view class="flex items-end">
               <text class="text-[28rpx] text-[#ABAEB2]">
                 合计：
               </text>
               <text class="text-price text-[44rpx] text-[#FF0011]">
                 499
               </text>
-            </view>
+            </view> -->
             <view
               class="ml-[20rpx] h-[80rpx] w-[254rpx] rounded-full text-center text-[28rpx] text-[#FFFFFF] leading-[80rpx]"
               style="background: linear-gradient( 87deg, #0788F3 0%, #0769EB 100%);" @click="onNext"

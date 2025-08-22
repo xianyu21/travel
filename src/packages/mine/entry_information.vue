@@ -109,7 +109,6 @@ function resetForm() {
         cityId: '',
         county: '',
         countyId: '',
-        address: '',
       })
 
       // 重置证件照片

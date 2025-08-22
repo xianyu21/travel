@@ -146,9 +146,17 @@ function submitOrder() {
     }).then((res) => {
       console.log(res)
       toast.show('订单提交成功')
-      setTimeout(() => {
-        back()
-      }, 1500)
+      if (formData.value.payType == 3) {
+        setTimeout(() => {
+          back()
+        }, 1500)
+      }
+      else {
+        go('/packages/public/webView', { url: res.data.qr_code })
+      }
+      // <view @click="go('/packages/public/webView')">
+      //     支付测试
+      //   </view>
     }).catch((err) => {
       console.log(err)
     })
@@ -366,9 +374,9 @@ onUnload(() => {
         </view>
       </view>
     </view>
-    <ol-paymentPicker v-model="formData.payType" :disabled-payments="[1, 2]" />
+    <ol-paymentPicker v-model="formData.payType" :disabled-payments="[1]" />
     <!--  -->
-    <view class="mt-[130rpx] flex items-center justify-center">
+    <view class="mb-[100rpx] mt-[30rpx] flex items-center justify-center">
       <wd-checkbox v-model="isCheck" size="large" checked-color="#0669EB" />
       <text class="text-[24rpx] text-[#6E6E6E]">
         已阅读并同意

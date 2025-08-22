@@ -20,12 +20,13 @@ const toast = useToast()
 const src = ref('')
 onLoad(async (options) => {
   console.log(options)
-  const res = await getByType({
-    adType: options.adType,
-  })
-  if (options.adType == 1) {
-    src.value = res.data.identifyUrl
-  }
+  src.value = options.url
+  // const res = await getByType({
+  //   adType: options.adType,
+  // })
+  // if (options.adType == 1) {
+  //   src.value = res.data.identifyUrl
+  // }
   // else if (options.type == 2) {
   //   const res = await getCreateContract({
   //     order_sn: options.order_sn,

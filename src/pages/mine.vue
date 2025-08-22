@@ -71,18 +71,20 @@ onShow(() => {
             张
           </text>
         </view>
-        <view class="h-[72rpx] w-full flex items-center justify-center gap-[10rpx] rounded-[20rpx] bg-[#8CC2FD] text-[#fff]" @click="go('/packages/mine/coupon')">
-          <image
-            src="@img/img-025.png"
-            mode="scaleToFill"
-            class="h-[25.76rpx] w-[29.44rpx]"
-          />
+        <view
+          class="h-[72rpx] w-full flex items-center justify-center gap-[10rpx] rounded-[20rpx] bg-[#8CC2FD] text-[#fff]"
+          @click="go('/packages/mine/coupon')"
+        >
+          <image src="@img/img-025.png" mode="scaleToFill" class="h-[25.76rpx] w-[29.44rpx]" />
           <text class="text-[24rpx] text-[#EDF6FB]">
             暂无可用优惠券
           </text>
         </view>
       </view>
-      <view class="bg-007 flex flex-1 flex-col gap-[30rpx] px-[26rpx] text-[#fff]" @click="go('/packages/mine/recharge')">
+      <view
+        class="bg-007 flex flex-1 flex-col gap-[30rpx] px-[26rpx] text-[#fff]"
+        @click="go('/packages/mine/recharge')"
+      >
         <view class="mt-[26rpx]">
           <text class="text-[24rpx]">
             平台余额(元)
@@ -93,7 +95,9 @@ onShow(() => {
           <text class="text-[32rpx] font-bold">
             {{ userStore.userInfo.balance }}
           </text>
-          <view class="h-[52rpx] w-[140rpx] rounded-full bg-[#FFFFFF] text-center text-[28rpx] text-[#798CF7] leading-[52rpx]">
+          <view
+            class="h-[52rpx] w-[140rpx] rounded-full bg-[#FFFFFF] text-center text-[28rpx] text-[#798CF7] leading-[52rpx]"
+          >
             去充值
           </view>
         </view>
@@ -131,31 +135,31 @@ onShow(() => {
         </view>
       </view>
       <view class="grid grid-cols-[repeat(5,auto)] mt-[30rpx] gap-[30rpx]">
-        <view class="flex flex-col items-center" @click="go('/packages/order/index')">
+        <view class="flex flex-col items-center justify-between" @click="go('/packages/order/index')">
           <image src="@img/img-020.png" mode="scaleToFill" class="h-[48rpx] w-[46rpx]" />
           <text class="mt-[10rpx] text-[24rpx] text-[#000000]">
             已接单
           </text>
         </view>
-        <view class="flex flex-col items-center" @click="go('/packages/order/index')">
+        <view class="flex flex-col items-center justify-between" @click="go('/packages/order/index')">
           <image src="@img/img-021.png" mode="scaleToFill" class="h-[48rpx] w-[44rpx]" />
           <text class="mt-[10rpx] text-[24rpx] text-[#000000]">
             已出发
           </text>
         </view>
-        <view class="flex flex-col items-center" @click="go('/packages/order/index')">
+        <view class="flex flex-col items-center justify-between" @click="go('/packages/order/index')">
           <image src="@img/img-022.png" mode="scaleToFill" class="h-[46rpx] w-[48rpx]" />
           <text class="mt-[10rpx] text-[24rpx] text-[#000000]">
             已到达
           </text>
         </view>
-        <view class="flex flex-col items-center" @click="go('/packages/order/index')">
+        <view class="flex flex-col items-center justify-between" @click="go('/packages/order/index')">
           <image src="@img/img-023.png" mode="scaleToFill" class="h-[48rpx] w-[44rpx]" />
           <text class="mt-[10rpx] text-[24rpx] text-[#000000]">
             开始服务
           </text>
         </view>
-        <view class="flex flex-col items-center" @click="go('/packages/order/index')">
+        <view class="flex flex-col items-center justify-between" @click="go('/packages/order/index')">
           <image src="@img/img-024.png" mode="scaleToFill" class="h-[44rpx] w-[48rpx]" />
           <text class="mt-[10rpx] text-[24rpx] text-[#000000]">
             完成
@@ -232,6 +236,7 @@ onShow(() => {
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }
+
 .bg-006 {
   width: 100%;
   height: 176rpx;
@@ -239,6 +244,7 @@ onShow(() => {
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }
+
 .bg-007 {
   width: 100%;
   height: 176rpx;
@@ -246,6 +252,7 @@ onShow(() => {
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }
+
 .bg-base-mine {
   background: linear-gradient(#b0e1ff 0%, #fafafa 30%, #f6f6f6 100%);
   width: 100%;
